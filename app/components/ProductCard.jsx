@@ -41,7 +41,7 @@ const ProductCard = ({ product, formatPrice, selectedSaleType }) => {
                   <p className="text-xs font-medium text-green-700 uppercase tracking-wide mb-1 flex items-center justify-center">
                     ⚖️ Precio por Kg
                   </p>
-                  <p className="text-3xl font-bold text-green-800">{formatPrice(product.price_per_kg)}</p>
+                  <p className="text-3xl font-bold text-green-800">{formatPrice(product.price)}</p>
                 </>
               )}
             </div>

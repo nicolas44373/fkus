@@ -86,9 +86,6 @@ export function useProducts() {
   const addProduct = async (payload: ProductPayload) => {
     try {
       setSubmitting(true)
-      const cat = categories.find(c => String(c.id) === String(payload.category_id))
-      const isRebozados = cat ? cat.name.toLowerCase() === 'rebozados' : false
-
       const insertData: any = {
         name: payload.name,
         price: payload.price !== '' ? payload.price : null,
@@ -96,9 +93,6 @@ export function useProducts() {
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
         in_stock: payload.in_stock !== false
-      }
-      if (isRebozados) {
-        insertData.price_per_kg = null
       }
 
       const { error } = await supabase.from('products').insert([insertData])
@@ -116,9 +110,6 @@ export function useProducts() {
   const updateProduct = async (id: number | string, payload: ProductPayload) => {
     try {
       setSubmitting(true)
-      const cat = categories.find(c => String(c.id) === String(payload.category_id))
-      const isRebozados = cat ? cat.name.toLowerCase() === 'rebozados' : false
-
       const updateData: any = {
         name: payload.name,
         price: payload.price !== '' ? payload.price : null,
@@ -126,9 +117,6 @@ export function useProducts() {
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
         in_stock: payload.in_stock !== false
-      }
-      if (isRebozados) {
-        updateData.price_per_kg = null
       }
 
       const { error } = await supabase
