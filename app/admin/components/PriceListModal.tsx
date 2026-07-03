@@ -99,7 +99,7 @@ export default function PriceListModal({ products, onClose }: Props) {
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Lista de Precios — Alenort</title>
+<title>Lista de Precios — Tadeo Rebozados</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #111; background: #fff; }
@@ -131,13 +131,13 @@ export default function PriceListModal({ products, onClose }: Props) {
 <div class="page">
   <div class="header">
     <div class="header-left">
-      <h1>ALENORT</h1>
+      <h1>TADEO REBOZADOS</h1>
       <p>Lista de Precios — Actualizado al ${today}</p>
     </div>
     <div class="header-right">Precios en pesos argentinos (ARS)<br>${available.length} productos · ${sortedCategories.length} categorías</div>
   </div>
   ${categoriesHtml}
-  <div class="footer">Lista generada automáticamente · Alenort · ${today}</div>
+  <div class="footer">Lista generada automáticamente · Tadeo Rebozados · ${today}</div>
 </div>
 <script>setTimeout(() => { window.print(); }, 250);</script>
 </body>

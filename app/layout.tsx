@@ -6,8 +6,8 @@ import ClientWrapper from "./components/ClientWrapper"
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
 
 export const metadata: Metadata = {
-  title: "Alenort - Catalogo mayorista",
-  description: "Catálogo mayorista de Alenort",
+  title: "Tadeo - Catalogo mayorista",
+  description: "Catálogo mayorista de Tadeo",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -11,6 +11,7 @@ export type ProductPayload = {
   category_id: string
   marca?: string | null
   in_stock?: boolean
+  image_url?: string | null
 }
 
 export type Product = {
@@ -21,6 +22,7 @@ export type Product = {
   category_id: number
   marca: string | null
   in_stock: boolean
+  image_url?: string | null
   category_name: string
 }
 
@@ -52,9 +54,9 @@ export function useProducts() {
       const [{ data: productsData }, { data: categoriesData }] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, price, unit, category_id, marca, in_stock, categories(name)')
+          .select('id, name, price, unit, category_id, marca, in_stock, image_url, categories(name)')
           .order('name'),
-        supabase.from('categories').select('id, name').order('name')
+        supabase.from('categories').select('id, name, image_url').order('name')
       ])
 
       if (productsData) {
@@ -67,6 +69,7 @@ export function useProducts() {
             category_id: p.category_id,
             marca: p.marca,
             in_stock: p.in_stock !== false, // default to true if null
+            image_url: p.image_url || '',
             category_name: p.categories?.name || ''
           }))
         )
@@ -92,7 +95,8 @@ export function useProducts() {
         unit: payload.unit || null,
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
-        in_stock: payload.in_stock !== false
+        in_stock: payload.in_stock !== false,
+        image_url: payload.image_url || null
       }
 
       const { error } = await supabase.from('products').insert([insertData])
@@ -116,7 +120,8 @@ export function useProducts() {
         unit: payload.unit || null,
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
-        in_stock: payload.in_stock !== false
+        in_stock: payload.in_stock !== false,
+        image_url: payload.image_url || null
       }
 
       const { error } = await supabase
@@ -211,6 +216,66 @@ export function useProducts() {
     }
   }
 
+  const updateCategory = async (id: number | string, payload: { name?: string; image_url: string | null }) => {
+    try {
+      setSubmitting(true)
+      const updateData: any = {
+        image_url: payload.image_url
+      }
+      if (payload.name) {
+        updateData.name = payload.name
+      }
+      const { error } = await supabase
+        .from('categories')
+        .update(updateData)
+        .eq('id', id)
+      if (error) throw error
+      await loadAll()
+      return { success: true }
+    } catch (error: any) {
+      console.error(error)
+      return { success: false, error: error.message || 'Error al actualizar categoría' }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const addCategory = async (payload: { name: string; image_url?: string | null }) => {
+    try {
+      setSubmitting(true)
+      const { data, error } = await supabase
+        .from('categories')
+        .insert([{ name: payload.name, image_url: payload.image_url || null }])
+        .select()
+      if (error) throw error
+      await loadAll()
+      return { success: true, category: data[0] }
+    } catch (error: any) {
+      console.error(error)
+      return { success: false, error: error.message || 'Error al agregar categoría' }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const deleteCategory = async (id: number | string) => {
+    try {
+      setSubmitting(true)
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', id)
+      if (error) throw error
+      await loadAll()
+      return { success: true }
+    } catch (error: any) {
+      console.error(error)
+      return { success: false, error: error.message || 'Error al eliminar categoría' }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return {
     products,
     categories,
@@ -220,6 +285,9 @@ export function useProducts() {
     updateProduct,
     toggleStock,
     bulkUpdatePrices,
-    deleteProduct
+    deleteProduct,
+    updateCategory,
+    addCategory,
+    deleteCategory
   }
 }

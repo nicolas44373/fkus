@@ -15,7 +15,7 @@ export default function Header() {
 
         {/* Logo */}
         <div className="flex items-center">
-          <img src="/alenort4.png" alt="Alenort" className="h-17 w-auto object-contain" />
+          <img src="/tadeologo.png" alt="Tadeo" className="h-16 w-auto object-contain" />
         </div>
 
         {/* Derecha */}

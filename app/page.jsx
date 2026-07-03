@@ -16,14 +16,14 @@ export default function MainPage() {
   const router = useRouter()
 
   const categoryConfig = {
-    'Pata Muslo':              { imageSrc: '/pata.jpeg',    emoji: '🍗', description: 'Cajón de Pata Muslo' },
-    Filet:                     { imageSrc: '/filet.JPG',    emoji: '🥩', description: 'Filet de Pechuga' },
-    'Cajon de Pollo':          { imageSrc: '/gualppa.jpeg', emoji: '📦', description: 'Cajones x20kg' },
-    Ofertas:                   { imageSrc: '/oferta.PNG',   emoji: '🔥', description: 'Promociones Especiales' },
-    Pescados:                  { imageSrc: '/pescado.JPG',  emoji: '🐟', description: 'Merluza, Atún y más' },
-    Rebozados:                 { imageSrc: '/rebo.JPG',     emoji: '🍞', description: 'Productos Elaborados' },
-    'Carne Mecanizada (Molida)': { imageSrc: '/cms.jpg',   emoji: '🥩', description: 'Carne Molida' },
-    Otros:                     { imageSrc: '/otros.png',    emoji: '🥚', description: 'Huevos y Pan Rallado' },
+    'Pata Muslo':              { imageSrc: '/tadeologo.png', emoji: '🍗', description: 'Cajón de Pata Muslo' },
+    Filet:                     { imageSrc: '/tadeologo.png', emoji: '🥩', description: 'Filet de Pechuga' },
+    'Cajon de Pollo':          { imageSrc: '/tadeologo.png', emoji: '📦', description: 'Cajones x20kg' },
+    Ofertas:                   { imageSrc: '/tadeologo.png', emoji: '🔥', description: 'Promociones Especiales' },
+    Pescados:                  { imageSrc: '/tadeologo.png', emoji: '🐟', description: 'Merluza, Atún y más' },
+    Rebozados:                 { imageSrc: '/tadeologo.png', emoji: '🍞', description: 'Productos Elaborados' },
+    'Carne Mecanizada (Molida)': { imageSrc: '/tadeologo.png', emoji: '🥩', description: 'Carne Molida' },
+    Otros:                     { imageSrc: '/tadeologo.png', emoji: '🥚', description: 'Huevos y Pan Rallado' },
   }
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function MainPage() {
   const handleCategoryClick = id => router.push(`/catalog?category=${id}`)
 
   const handleWhatsAppContact = () => {
-    const url = `https://wa.me/+5493812224766?text=${encodeURIComponent('Hola! Me interesa obtener información sobre sus productos por mayor.')}`
+    const url = `https://wa.me/+5493854021865?text=${encodeURIComponent('Hola! Me interesa obtener información sobre sus productos por mayor.')}`
     window.open(url, '_blank')
     setShowContactMenu(false)
   }
@@ -136,7 +136,7 @@ export default function MainPage() {
                   {/* Imagen */}
                   <div className="relative w-full h-40 sm:h-48 overflow-hidden bg-gray-100">
                     <Image
-                      src={cfg.imageSrc}
+                      src={category.image_url || cfg.imageSrc}
                       alt={category.name}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"

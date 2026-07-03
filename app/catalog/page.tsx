@@ -15,6 +15,7 @@ type ProductRow = {
   category_id: number | string
   marca: string | null
   in_stock?: boolean
+  image_url?: string | null
   created_at: string
   updated_at: string
 }
@@ -94,6 +95,17 @@ const ProductCard = ({
 
       {/* Stripe acento */}
       <div className={`h-1.5 ${qty > 0 ? 'bg-gradient-to-r from-emerald-400 to-emerald-600' : 'bg-gradient-to-r from-amber-400 to-amber-500'}`} />
+
+      {/* Imagen del Producto */}
+      {product.image_url && (
+        <div className="relative w-full h-40 overflow-hidden bg-gray-100/50 border-b border-gray-100 flex items-center justify-center shrink-0">
+          <img 
+            src={product.image_url} 
+            alt={product.name} 
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+          />
+        </div>
+      )}
 
       <div className="p-5 flex flex-col flex-1">
         {/* Nombre */}
@@ -217,7 +229,7 @@ function CatalogContent() {
 
         const { data: prods, error: prodErr } = await supabase
           .from('products')
-          .select('id, name, price, unit, marca, category_id, in_stock')
+          .select('id, name, price, unit, marca, category_id, in_stock, image_url')
           .eq('category_id', categoryId)
           .eq('in_stock', true)
           .not('price', 'is', null)
@@ -237,7 +249,7 @@ function CatalogContent() {
   const handleWhatsAppContact = () => {
     const cat = categoryName ? ` de ${categoryName}` : ''
     const msg = `Hola! Me interesa obtener información sobre productos${cat} por mayor.`
-    window.open(`https://wa.me/+5493812224766?text=${encodeURIComponent(msg)}`, '_blank')
+    window.open(`https://wa.me/+5493854021865?text=${encodeURIComponent(msg)}`, '_blank')
     setShowContactMenu(false)
   }
 

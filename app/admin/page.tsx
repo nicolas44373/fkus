@@ -12,15 +12,16 @@ import ProductsTable from './components/ProductsTable'
 import LoadingScreen from './components/LoadingScreen'
 import PriceListModal from './components/PriceListModal'
 import BulkPriceUpdateModal from './components/BulkPriceUpdateModal'
-import { Trophy, Check, X, Search, Edit2, Loader2, ArrowUpRight, Percent } from 'lucide-react'
+import CategoryModal from './components/CategoryModal'
+import { Trophy, Check, X, Search, Edit2, Loader2, ArrowUpRight, Percent, Trash2, Plus } from 'lucide-react'
 
 type Toast = { message: string; type: 'success' | 'error' } | null
 type ConfirmDel = { id: number | string; name: string } | null
 
-const emptyForm = { name: '', price: '', unit: '', category_id: '', marca: '' }
+const emptyForm = { name: '', price: '', unit: '', category_id: '', marca: '', image_url: '' }
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'members'>('products')
+  const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'members' | 'categories'>('products')
   
   // Productos states
   const [showAddForm, setShowAddForm]     = useState(false)
@@ -38,7 +39,12 @@ export default function AdminPage() {
   const [editingMemberPoints, setEditingMemberPoints] = useState<any>(null)
   const [newPointsInput, setNewPointsInput] = useState('')
 
-  const { products, categories, loading, submitting, addProduct, updateProduct, toggleStock, bulkUpdatePrices, deleteProduct } = useProducts()
+  // Categorías states
+  const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<any>(null)
+  const [confirmDelCategory, setConfirmDelCategory] = useState<{ id: number | string; name: string } | null>(null)
+
+  const { products, categories, loading, submitting, addProduct, updateProduct, toggleStock, bulkUpdatePrices, deleteProduct, updateCategory, addCategory, deleteCategory } = useProducts()
   const { 
     selectedCategory, 
     setSelectedCategory, 
@@ -274,9 +280,30 @@ export default function AdminPage() {
       category_id: product.category_id ? String(product.category_id) : '',
       marca: product.marca || '',
       in_stock: product.in_stock,
+      image_url: product.image_url || '',
     })
     setShowAddForm(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleCategorySubmit = async (formData: any) => {
+    if (editingCategory) {
+      const res = await updateCategory(editingCategory.id, formData)
+      if (res.success) { notify('Categoría actualizada', 'success'); setShowCategoryModal(false) }
+      else notify(`Error: ${res.error}`, 'error')
+    } else {
+      const res = await addCategory(formData)
+      if (res.success) { notify('Categoría creada', 'success'); setShowCategoryModal(false) }
+      else notify(`Error: ${res.error}`, 'error')
+    }
+  }
+
+  const handleDeleteCategoryConfirm = async () => {
+    if (!confirmDelCategory) return
+    const res = await deleteCategory(confirmDelCategory.id)
+    setConfirmDelCategory(null)
+    if (res.success) notify('Categoría eliminada', 'success')
+    else notify(`Error: ${res.error}`, 'error')
   }
 
   const handleSubmit = async (formData: any) => {
@@ -360,6 +387,35 @@ export default function AdminPage() {
         </div>
       )}
 
+      {/* ── Modal confirmar eliminación categoría ── */}
+      {confirmDelCategory && (
+        <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-7 max-w-sm w-full animate-in zoom-in-95 duration-150">
+            <div className="text-4xl mb-4 text-center">🗑️</div>
+            <h3 className="font-extrabold text-gray-900 text-lg mb-2 text-center">¿Eliminar categoría?</h3>
+            <p className="text-gray-500 text-sm text-center mb-6">
+              Vas a eliminar <strong className="text-gray-800">"{confirmDelCategory.name}"</strong>.<br />
+              <span className="text-red-500 font-bold block mt-2">¡Atención! Se eliminarán de forma permanente todos los productos asociados a esta categoría.</span>
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelCategory(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-semibold text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteCategoryConfirm}
+                disabled={submitting}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm disabled:opacity-50 transition-colors cursor-pointer"
+              >
+                {submitting ? 'Eliminando…' : 'Sí, eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Modal Ajustar Puntos de Socio ── */}
       {editingMemberPoints && (
         <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
@@ -404,10 +460,10 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
 
         {/* ── NAVEGACIÓN POR PESTAÑAS ── */}
-        <div className="flex border-b border-gray-200 bg-white p-2 rounded-2xl shadow-sm shrink-0">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row border border-gray-200 bg-white p-2 rounded-2xl shadow-sm gap-2">
           <button
             onClick={() => setActiveTab('products')}
-            className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer ${
               activeTab === 'products'
                 ? 'bg-amber-500 text-white shadow-md'
                 : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
@@ -417,7 +473,7 @@ export default function AdminPage() {
           </button>
           <button
             onClick={() => { setActiveTab('orders'); loadClubData() }}
-            className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'orders'
                 ? 'bg-amber-500 text-white shadow-md'
                 : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
@@ -432,13 +488,23 @@ export default function AdminPage() {
           </button>
           <button
             onClick={() => { setActiveTab('members'); loadClubData() }}
-            className={`flex-1 sm:flex-initial px-6 py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'members'
                 ? 'bg-amber-500 text-white shadow-md'
                 : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
             }`}
           >
             👥 Miembros Club
+          </button>
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+              activeTab === 'categories'
+                ? 'bg-amber-500 text-white shadow-md'
+                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+            }`}
+          >
+            🖼️ Categorías
           </button>
         </div>
 
@@ -524,7 +590,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
               <div>
-                <h3 className="font-extrabold text-gray-900 text-base">Pedidos Club Alenort</h3>
+                <h3 className="font-extrabold text-gray-900 text-base">Pedidos Club Tadeo</h3>
                 <p className="text-xs text-gray-400 font-medium mt-1">
                   Confirma las compras de WhatsApp aquí para asignar los puntos correspondientes a los socios.
                 </p>
@@ -545,7 +611,7 @@ export default function AdminPage() {
               </div>
             ) : clubOrders.length === 0 ? (
               <div className="p-16 text-center text-gray-400">
-                <p className="text-sm">No hay pedidos registrados en el Club Alenort.</p>
+                <p className="text-sm">No hay pedidos registrados en el Club Tadeo.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -706,7 +772,7 @@ export default function AdminPage() {
             {/* Tabla de socios */}
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50">
-                <h3 className="font-extrabold text-gray-900 text-base">Socios Club Alenort</h3>
+                <h3 className="font-extrabold text-gray-900 text-base">Socios Club Tadeo</h3>
                 <p className="text-xs text-gray-400 font-medium mt-1">
                   Listado de clientes registrados en el club con su código único de membresía y puntaje.
                 </p>
@@ -798,6 +864,68 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+        {/* ── CONTENIDO: CATEGORÍAS ── */}
+        {activeTab === 'categories' && (
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-extrabold text-gray-950 text-base">Gestión de Categorías</h3>
+                <p className="text-xs text-gray-400 font-medium mt-1">
+                  Crea, edita y elimina las categorías de tu catálogo e inicio.
+                </p>
+              </div>
+              <button
+                onClick={() => { setEditingCategory(null); setShowCategoryModal(true) }}
+                className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm transition-colors cursor-pointer shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                Nueva Categoría
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+                {categories.map((category) => (
+                  <div key={category.id} className="flex items-center gap-4 bg-gray-50 border border-gray-150 rounded-2xl p-5 hover:border-gray-300 transition-colors">
+                    {/* Thumbnail/Preview */}
+                    <div className="relative w-24 h-24 bg-white border border-gray-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
+                      {category.image_url ? (
+                        <img src={category.image_url} alt={category.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="text-center text-xs text-gray-300 font-bold uppercase tracking-wider select-none">Sin foto</div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-extrabold text-gray-950 text-base truncate mb-1">
+                        {category.name}
+                      </h4>
+                      <p className="text-xs text-gray-400 mb-4 font-semibold">
+                        {category.image_url ? 'Imagen personalizada activa' : 'Usando logo por defecto'}
+                      </p>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { setEditingCategory(category); setShowCategoryModal(true) }}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 bg-white hover:bg-gray-50 shadow-sm cursor-pointer transition-colors"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" /> Editar
+                        </button>
+                        <button
+                          onClick={() => setConfirmDelCategory({ id: category.id, name: category.name })}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-red-200 text-xs font-bold text-red-650 bg-white hover:bg-red-50 transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {showPriceList && (
@@ -844,6 +972,13 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+      <CategoryModal
+        isOpen={showCategoryModal}
+        onClose={() => { setShowCategoryModal(false); setEditingCategory(null) }}
+        category={editingCategory}
+        onSubmit={handleCategorySubmit}
+        submitting={submitting}
+      />
     </div>
   )
 }

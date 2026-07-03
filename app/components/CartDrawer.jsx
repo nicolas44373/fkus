@@ -244,7 +244,7 @@ export default function CartDrawer() {
   }
 
   const handleFinalizeWhatsApp = () => {
-    window.open(`https://wa.me/+5493812224766?text=${encodeURIComponent(whatsappMessage)}`, '_blank')
+    window.open(`https://wa.me/+5493854021865?text=${encodeURIComponent(whatsappMessage)}`, '_blank')
     clearCart()
     setIsOpen(false)
   }

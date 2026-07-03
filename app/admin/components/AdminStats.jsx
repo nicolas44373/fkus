@@ -6,7 +6,7 @@ export default function AdminStats({ products, categories, filteredProducts }) {
   ]
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       {stats.map(s => (
         <div key={s.label} className={`bg-white border rounded-2xl p-4 sm:p-5 flex items-center gap-4 shadow-sm ${s.ring}`}>
           <span className="text-2xl sm:text-3xl shrink-0">{s.icon}</span>

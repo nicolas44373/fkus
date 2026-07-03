@@ -52,7 +52,7 @@ export default function ProductsTable({
     return (
       <th 
         onClick={() => onToggleSort(field)}
-        className={`px-5 py-3 text-xs font-bold text-gray-500 uppercase tracking-wide cursor-pointer hover:bg-gray-100 hover:text-gray-700 transition-colors select-none ${alignment}`}
+        className={`px-3 sm:px-5 py-2.5 sm:py-3 text-xs font-bold text-gray-500 uppercase tracking-wide cursor-pointer hover:bg-gray-100 hover:text-gray-700 transition-colors select-none ${alignment}`}
       >
         <span className="inline-flex items-center">
           {label}
@@ -133,7 +133,7 @@ export default function ProductsTable({
                     }`}
                   >
                     {/* Row checkbox */}
-                    <td className="px-5 py-3.5 text-center">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 text-center">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -143,29 +143,39 @@ export default function ProductsTable({
                     </td>
 
                     {/* Producto */}
-                    <td className="px-5 py-3.5">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5">
                       <div className="flex items-center gap-2.5">
                         {isEditing && (
                           <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-amber-500" />
                         )}
-                        <span className={`font-semibold ${isEditing ? 'text-amber-800' : 'text-gray-800'} whitespace-normal max-w-xs sm:max-w-md`}>
-                          {product.name}
-                        </span>
-                        {product.unit && (
-                          <span className="text-xs text-gray-400 font-medium whitespace-nowrap">({product.unit})</span>
-                        )}
+                        {/* Thumbnail */}
+                        <div className="w-10 h-10 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                          {product.image_url ? (
+                            <img src={product.image_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <Package className="w-5 h-5 text-gray-300" />
+                          )}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className={`font-semibold ${isEditing ? 'text-amber-800' : 'text-gray-800'} whitespace-normal max-w-xs sm:max-w-md`}>
+                            {product.name}
+                          </span>
+                          {product.unit && (
+                            <span className="text-[10px] text-gray-400 font-medium whitespace-nowrap mt-0.5">({product.unit})</span>
+                          )}
+                        </div>
                       </div>
                     </td>
 
                     {/* Categoría */}
-                    <td className="px-5 py-3.5 hidden sm:table-cell">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 hidden sm:table-cell">
                       <span className="inline-block text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-0.5 rounded-full whitespace-nowrap">
                         {product.category_name || 'Sin categoría'}
                       </span>
                     </td>
 
                     {/* Marca */}
-                    <td className="px-5 py-3.5 hidden md:table-cell">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 hidden md:table-cell">
                       {product.marca ? (
                         <span className="inline-block text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-0.5 rounded-full">
                           {product.marca}
@@ -176,7 +186,7 @@ export default function ProductsTable({
                     </td>
 
                     {/* Stock status toggle button */}
-                    <td className="px-5 py-3.5 text-center">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 text-center">
                       <button
                         onClick={() => onToggleStock(product.id, product.in_stock)}
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black transition-all cursor-pointer select-none ${
@@ -192,7 +202,7 @@ export default function ProductsTable({
                     </td>
 
                     {/* Precio (con edición rápida inline) */}
-                    <td className="px-5 py-3.5 text-right pr-8">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5 text-right pr-8">
                       {isInlineEditingPrice ? (
                         <div className="flex items-center justify-end gap-1">
                           <span className="text-gray-400 font-bold text-xs">$</span>
@@ -239,7 +249,7 @@ export default function ProductsTable({
                     </td>
 
                     {/* Acciones */}
-                    <td className="px-5 py-3.5">
+                    <td className="px-3 sm:px-5 py-2.5 sm:py-3.5">
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => onEdit(product)}

@@ -7,15 +7,41 @@ type Props = {
   isEditing: boolean
   categories: any[]
   submitting: boolean
-  initialData: { name?: string; price?: string; unit?: string; category_id?: string; marca?: string; in_stock?: boolean } | null
-  onSubmit: (data: { name: string; price: string; unit?: string; category_id: string; marca?: string; in_stock: boolean }) => Promise<any>
+  initialData: { name?: string; price?: string; unit?: string; category_id?: string; marca?: string; in_stock?: boolean; image_url?: string } | null
+  onSubmit: (data: { name: string; price: string; unit?: string; category_id: string; marca?: string; in_stock: boolean; image_url?: string }) => Promise<any>
   onCancel: () => void
 }
 
 const field = 'w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all'
 
 export default function ProductForm({ isVisible, isEditing, categories, submitting, initialData, onSubmit, onCancel }: Props) {
-  const [form, setForm] = useState({ name: '', price: '', unit: '', category_id: '', marca: '', in_stock: true })
+  const [form, setForm] = useState({ name: '', price: '', unit: '', category_id: '', marca: '', in_stock: true, image_url: '' })
+  const [uploading, setUploading] = useState(false)
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      setUploading(true)
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      })
+      const result = await res.json()
+      if (result.success && result.imageUrl) {
+        set('image_url', result.imageUrl)
+      } else {
+        alert(result.error || 'Error al subir la imagen')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Error en la subida de imagen')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   useEffect(() => {
     if (initialData) {
@@ -26,9 +52,10 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
         category_id: initialData.category_id ?? '',
         marca:       initialData.marca       ?? '',
         in_stock:    initialData.in_stock    ?? true,
+        image_url:   initialData.image_url   ?? '',
       })
     } else {
-      setForm({ name: '', price: '', unit: '', category_id: '', marca: '', in_stock: true })
+      setForm({ name: '', price: '', unit: '', category_id: '', marca: '', in_stock: true, image_url: '' })
     }
   }, [initialData])
 
@@ -43,6 +70,7 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
       category_id: form.category_id,
       marca:       form.marca.trim() || undefined,
       in_stock:    form.in_stock,
+      image_url:   form.image_url || undefined,
     })
   }
 
@@ -147,6 +175,48 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
               placeholder="Ej: Don Fernando"
               className={field}
             />
+          </div>
+
+          {/* Imagen del Producto — ancho completo */}
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+              Imagen del producto <span className="text-gray-300 font-normal">(opcional)</span>
+            </label>
+            <div className="flex items-center gap-4 bg-gray-50 border border-gray-150 rounded-xl p-4">
+              {form.image_url ? (
+                <div className="relative w-20 h-20 bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0 group">
+                  <img src={form.image_url} alt="Vista previa" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => set('image_url', '')}
+                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ) : (
+                <div className="w-20 h-20 bg-white border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-2xl text-gray-300 shrink-0 select-none">
+                  🖼️
+                </div>
+              )}
+              <div className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  id="product_image_file"
+                  className="hidden"
+                  disabled={uploading}
+                />
+                <label
+                  htmlFor="product_image_file"
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900 shadow-sm cursor-pointer transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                >
+                  {uploading ? 'Subiendo...' : 'Subir imagen'}
+                </label>
+                <p className="text-[11px] text-gray-400 mt-1">Formatos: JPG, PNG, WEBP. Tamaño recomendado: 800x600 px.</p>
+              </div>
+            </div>
           </div>
 
           {/* Stock Switch — ancho completo */}

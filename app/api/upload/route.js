@@ -1,5 +1,10 @@
 import { NextResponse } from 'next/server'
-import { uploadImage } from '../../../lib/cloudinary'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export async function POST(request) {
   try {
@@ -10,17 +15,34 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Convertir el archivo a base64 para Cloudinary
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const base64Data = `data:${file.type};base64,${buffer.toString('base64')}`
 
-    // Subir a Cloudinary
-    const imageUrl = await uploadImage(base64Data)
+    // Generar un nombre único para el archivo
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+
+    // Subir a Supabase Storage (bucket 'tadeo-images')
+    const { data, error } = await supabase.storage
+      .from('tadeo-images')
+      .upload(fileName, buffer, {
+        contentType: file.type,
+        upsert: true
+      })
+
+    if (error) {
+      console.error('Supabase storage error:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // Obtener URL pública
+    const { data: { publicUrl } } = supabase.storage
+      .from('tadeo-images')
+      .getPublicUrl(fileName)
 
     return NextResponse.json({ 
       success: true, 
-      imageUrl 
+      imageUrl: publicUrl 
     })
 
   } catch (error) {
