@@ -99,25 +99,25 @@ export default function PriceListModal({ products, onClose }: Props) {
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Lista de Precios — Tadeo Rebozados</title>
+<title>Lista de Precios — FKUS</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #111; background: #fff; }
   .page { padding: 20px 28px; }
-  .header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 14px; border-bottom: 3px solid #f59e0b; margin-bottom: 22px; }
+  .header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 14px; border-bottom: 3px solid #18181b; margin-bottom: 22px; }
   .header-left h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #111; }
   .header-left p { color: #6b7280; font-size: 10.5px; margin-top: 3px; }
   .header-right { text-align: right; color: #9ca3af; font-size: 10px; }
   .cat-block { margin-bottom: 22px; page-break-inside: avoid; }
-  .cat-header { background: #fef3c7; color: #92400e; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; padding: 7px 12px; border-left: 4px solid #f59e0b; display: flex; justify-content: space-between; align-items: center; }
-  .cat-count { font-weight: 500; font-size: 10px; color: #b45309; }
+  .cat-header { background: #f4f4f5; color: #18181b; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; padding: 7px 12px; border-left: 4px solid #18181b; display: flex; justify-content: space-between; align-items: center; }
+  .cat-count { font-weight: 500; font-size: 10px; color: #71717a; }
   table { width: 100%; border-collapse: collapse; }
   thead tr { background: #f9fafb; }
   th { padding: 7px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
   .th-price { text-align: right; }
   td { padding: 7px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
   td.name { color: #111; font-weight: 600; }
-  td.price { text-align: right; color: #065f46; font-weight: 700; white-space: nowrap; }
+  td.price { text-align: right; color: #18181b; font-weight: 700; white-space: nowrap; }
   td.desc { color: #6b7280; font-size: 10px; }
   .unit { color: #9ca3af; font-size: 9.5px; font-weight: 400; }
   tr:nth-child(even) td { background: #f9fafb; }
@@ -131,13 +131,13 @@ export default function PriceListModal({ products, onClose }: Props) {
 <div class="page">
   <div class="header">
     <div class="header-left">
-      <h1>TADEO REBOZADOS</h1>
+      <h1>FKUS</h1>
       <p>Lista de Precios — Actualizado al ${today}</p>
     </div>
     <div class="header-right">Precios en pesos argentinos (ARS)<br>${available.length} productos · ${sortedCategories.length} categorías</div>
   </div>
   ${categoriesHtml}
-  <div class="footer">Lista generada automáticamente · Tadeo Rebozados · ${today}</div>
+  <div class="footer">Lista generada automáticamente · FKUS · ${today}</div>
 </div>
 <script>setTimeout(() => { window.print(); }, 250);</script>
 </body>

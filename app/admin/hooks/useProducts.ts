@@ -7,6 +7,9 @@ import { supabase } from '@/lib/supabase'
 export type ProductPayload = {
   name: string
   price: string
+  compare_at_price?: string | null
+  sizes?: string | null
+  colors?: string | null
   unit?: string
   category_id: string
   marca?: string | null
@@ -18,6 +21,9 @@ export type Product = {
   id: number
   name: string
   price: string | null
+  compare_at_price: string | null
+  sizes: string | null
+  colors: string | null
   unit: string | null
   category_id: number
   marca: string | null
@@ -51,13 +57,37 @@ export function useProducts() {
   const loadAll = async () => {
     try {
       setLoading(true)
-      const [{ data: productsData }, { data: categoriesData }] = await Promise.all([
+      let productsData = null
+      let categoriesData = null
+
+      const [{ data: pData, error: pErr }, { data: cData, error: cErr }] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, price, unit, category_id, marca, in_stock, image_url, categories(name)')
+          .select('id, name, price, compare_at_price, sizes, colors, unit, category_id, marca, in_stock, image_url, categories(name)')
           .order('name'),
         supabase.from('categories').select('id, name, image_url').order('name')
       ])
+
+      if (pErr) {
+        if (pErr.code === '42703' || (pErr.message && pErr.message.includes('compare_at_price'))) {
+          console.warn('Supabase admin: Las columnas de indumentaria no existen todavía. Ejecutando fallback.')
+          const [{ data: fallbackP, error: fallbackPErr }, { data: fallbackC, error: fallbackCErr }] = await Promise.all([
+            supabase
+              .from('products')
+              .select('id, name, price, unit, category_id, marca, in_stock, image_url, categories(name)')
+              .order('name'),
+            supabase.from('categories').select('id, name, image_url').order('name')
+          ])
+          if (fallbackPErr) throw fallbackPErr
+          productsData = fallbackP
+          categoriesData = fallbackC
+        } else {
+          throw pErr
+        }
+      } else {
+        productsData = pData
+        categoriesData = cData
+      }
 
       if (productsData) {
         setProducts(
@@ -65,6 +95,9 @@ export function useProducts() {
             id: p.id,
             name: p.name,
             price: p.price,
+            compare_at_price: p.compare_at_price || null,
+            sizes: p.sizes || null,
+            colors: p.colors || null,
             unit: p.unit,
             category_id: p.category_id,
             marca: p.marca,
@@ -92,6 +125,9 @@ export function useProducts() {
       const insertData: any = {
         name: payload.name,
         price: payload.price !== '' ? payload.price : null,
+        compare_at_price: payload.compare_at_price !== '' && payload.compare_at_price ? payload.compare_at_price : null,
+        sizes: payload.sizes || null,
+        colors: payload.colors || null,
         unit: payload.unit || null,
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
@@ -117,6 +153,9 @@ export function useProducts() {
       const updateData: any = {
         name: payload.name,
         price: payload.price !== '' ? payload.price : null,
+        compare_at_price: payload.compare_at_price !== '' && payload.compare_at_price ? payload.compare_at_price : null,
+        sizes: payload.sizes || null,
+        colors: payload.colors || null,
         unit: payload.unit || null,
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
@@ -276,6 +315,58 @@ export function useProducts() {
     }
   }
 
+  const seedFkusCategories = async () => {
+    const fkusCategories = [
+      'Pantalones',
+      'Pantalones - Bermudas',
+      'Pantalones - Cargos',
+      'Pantalones - Jeans',
+      'Pantalones - Joggers',
+      'Pantalones - Sastreros',
+      'Remeras',
+      'Remeras - Boxy',
+      'Remeras - Chombas',
+      'Remeras - Musculosa',
+      'Remeras - Oversize',
+      'Remeras - Regulares',
+      'Remeras - Tejidas',
+      'Buzos',
+      'Buzos - Boxy',
+      'Camperas',
+      'Chalecos',
+      'Conjuntos',
+      'Camisacos',
+      'Camisas',
+      'Accesorios',
+      'Sweaters',
+      'Zapatillas',
+      'Mallas',
+      'Importados',
+    ]
+
+    try {
+      setSubmitting(true)
+      const existingNames = categories.map((c: any) => c.name.toLowerCase().trim())
+      const newToInsert = fkusCategories
+        .filter(name => !existingNames.includes(name.toLowerCase().trim()))
+        .map(name => ({ name, image_url: null }))
+
+      if (newToInsert.length === 0) {
+        return { success: true, count: 0, message: 'Todas las categorías FKUS ya están creadas.' }
+      }
+
+      const { error } = await supabase.from('categories').insert(newToInsert)
+      if (error) throw error
+      await loadAll()
+      return { success: true, count: newToInsert.length, message: `Se agregaron ${newToInsert.length} rubros/subcategorías de FKUS.` }
+    } catch (error: any) {
+      console.error(error)
+      return { success: false, error: error.message || 'Error al cargar rubros FKUS' }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return {
     products,
     categories,
@@ -288,6 +379,7 @@ export function useProducts() {
     deleteProduct,
     updateCategory,
     addCategory,
-    deleteCategory
+    deleteCategory,
+    seedFkusCategories
   }
 }

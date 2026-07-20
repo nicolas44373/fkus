@@ -22,9 +22,9 @@ export async function POST(request) {
     const fileExt = file.name.split('.').pop()
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
 
-    // Subir a Supabase Storage (bucket 'tadeo-images')
+    // Subir a Supabase Storage (bucket 'fkus-images')
     const { data, error } = await supabase.storage
-      .from('tadeo-images')
+      .from('fkus-images')
       .upload(fileName, buffer, {
         contentType: file.type,
         upsert: true
@@ -37,7 +37,7 @@ export async function POST(request) {
 
     // Obtener URL pública
     const { data: { publicUrl } } = supabase.storage
-      .from('tadeo-images')
+      .from('fkus-images')
       .getPublicUrl(fileName)
 
     return NextResponse.json({ 

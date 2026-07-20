@@ -18,7 +18,7 @@ import { Trophy, Check, X, Search, Edit2, Loader2, ArrowUpRight, Percent, Trash2
 type Toast = { message: string; type: 'success' | 'error' } | null
 type ConfirmDel = { id: number | string; name: string } | null
 
-const emptyForm = { name: '', price: '', unit: '', category_id: '', marca: '', image_url: '' }
+const emptyForm = { name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', image_url: '' }
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'members' | 'categories'>('products')
@@ -42,9 +42,10 @@ export default function AdminPage() {
   // Categorías states
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [editingCategory, setEditingCategory] = useState<any>(null)
+  const [presetParentName, setPresetParentName] = useState('')
   const [confirmDelCategory, setConfirmDelCategory] = useState<{ id: number | string; name: string } | null>(null)
 
-  const { products, categories, loading, submitting, addProduct, updateProduct, toggleStock, bulkUpdatePrices, deleteProduct, updateCategory, addCategory, deleteCategory } = useProducts()
+  const { products, categories, loading, submitting, addProduct, updateProduct, toggleStock, bulkUpdatePrices, deleteProduct, updateCategory, addCategory, deleteCategory, seedFkusCategories } = useProducts()
   const { 
     selectedCategory, 
     setSelectedCategory, 
@@ -276,6 +277,9 @@ export default function AdminPage() {
     setEditFormData({
       name: product.name || '',
       price: product.price ?? '',
+      compare_at_price: product.compare_at_price ?? '',
+      sizes: product.sizes || '',
+      colors: product.colors || '',
       unit: product.unit || '',
       category_id: product.category_id ? String(product.category_id) : '',
       marca: product.marca || '',
@@ -460,48 +464,48 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
 
         {/* ── NAVEGACIÓN POR PESTAÑAS ── */}
-        <div className="grid grid-cols-2 sm:flex sm:flex-row border border-gray-200 bg-white p-2 rounded-2xl shadow-sm gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row border border-slate-200 bg-white p-2 rounded-2xl shadow-xs gap-2">
           <button
             onClick={() => setActiveTab('products')}
-            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === 'products'
-                ? 'bg-amber-500 text-white shadow-md'
-                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             📦 Productos
           </button>
           <button
             onClick={() => { setActiveTab('orders'); loadClubData() }}
-            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'orders'
-                ? 'bg-amber-500 text-white shadow-md'
-                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             📋 Pedidos Club
             {clubOrders.filter(o => o.status === 'Pendiente').length > 0 && (
-              <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm animate-pulse">
+              <span className="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-xs animate-pulse">
                 {clubOrders.filter(o => o.status === 'Pendiente').length}
               </span>
             )}
           </button>
           <button
             onClick={() => { setActiveTab('members'); loadClubData() }}
-            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'members'
-                ? 'bg-amber-500 text-white shadow-md'
-                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             👥 Miembros Club
           </button>
           <button
             onClick={() => setActiveTab('categories')}
-            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeTab === 'categories'
-                ? 'bg-amber-500 text-white shadow-md'
-                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             🖼️ Categorías
@@ -526,6 +530,7 @@ export default function AdminPage() {
               onSubmit={handleSubmit}
               onCancel={handleCancel}
               initialData={editFormData}
+              onOpenCategoryModal={() => { setEditingCategory(null); setPresetParentName(''); setShowCategoryModal(true) }}
             />
 
             {/* Barra de herramientas */}
@@ -541,16 +546,16 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={() => setShowBulkPriceModal(true)}
-                className="shrink-0 flex items-center justify-center gap-2 bg-white hover:bg-amber-50 active:bg-amber-100 border border-amber-200 text-amber-700 px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors cursor-pointer"
+                className="shrink-0 flex items-center justify-center gap-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
               >
-                <Percent className="w-4 h-4" />
+                <Percent className="w-4 h-4 text-slate-500" />
                 Ajuste Masivo
               </button>
               <button
                 onClick={() => setShowPriceList(true)}
-                className="shrink-0 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 active:bg-gray-100 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors cursor-pointer"
+                className="shrink-0 flex items-center justify-center gap-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Lista de Precios
@@ -558,9 +563,9 @@ export default function AdminPage() {
               <button
                 onClick={handleShowAdd}
                 disabled={submitting}
-                className="shrink-0 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-colors cursor-pointer"
+                className="shrink-0 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-xs transition-colors cursor-pointer"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                 </svg>
                 Nuevo Producto
@@ -590,7 +595,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
               <div>
-                <h3 className="font-extrabold text-gray-900 text-base">Pedidos Club Tadeo</h3>
+                <h3 className="font-extrabold text-gray-900 text-base">Pedidos Club FKUS</h3>
                 <p className="text-xs text-gray-400 font-medium mt-1">
                   Confirma las compras de WhatsApp aquí para asignar los puntos correspondientes a los socios.
                 </p>
@@ -611,7 +616,7 @@ export default function AdminPage() {
               </div>
             ) : clubOrders.length === 0 ? (
               <div className="p-16 text-center text-gray-400">
-                <p className="text-sm">No hay pedidos registrados en el Club Tadeo.</p>
+                <p className="text-sm">No hay pedidos registrados en el Club FKUS.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -772,7 +777,7 @@ export default function AdminPage() {
             {/* Tabla de socios */}
             <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50">
-                <h3 className="font-extrabold text-gray-900 text-base">Socios Club Tadeo</h3>
+                <h3 className="font-extrabold text-gray-900 text-base">Socios Club FKUS</h3>
                 <p className="text-xs text-gray-400 font-medium mt-1">
                   Listado de clientes registrados en el club con su código único de membresía y puntaje.
                 </p>
@@ -867,62 +872,193 @@ export default function AdminPage() {
 
         {/* ── CONTENIDO: CATEGORÍAS ── */}
         {activeTab === 'categories' && (
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden animate-in">
+            <div className="px-6 py-5 border-b border-slate-200 bg-slate-50/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-extrabold text-gray-950 text-base">Gestión de Categorías</h3>
-                <p className="text-xs text-gray-400 font-medium mt-1">
-                  Crea, edita y elimina las categorías de tu catálogo e inicio.
+                <h3 className="font-black text-slate-900 text-xs uppercase tracking-widest">Gestión de Categorías y Subcategorías</h3>
+                <p className="text-xs text-slate-500 font-semibold mt-1">
+                  Crea, edita y administra los rubros principales y subcategorías de tu catálogo FKUS.
                 </p>
               </div>
-              <button
-                onClick={() => { setEditingCategory(null); setShowCategoryModal(true) }}
-                className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm transition-colors cursor-pointer shrink-0"
-              >
-                <Plus className="w-4 h-4" />
-                Nueva Categoría
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={async () => {
+                    const res = await seedFkusCategories()
+                    if (res.success) notify(res.message, 'success')
+                    else notify(res.error, 'error')
+                  }}
+                  disabled={submitting}
+                  className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs px-4 py-2.5 rounded-xl border border-slate-200 transition-all cursor-pointer shrink-0 disabled:opacity-50"
+                  title="Genera automáticamente los rubros por defecto de FKUS (Remeras, Pantalones, Cargos, etc.)"
+                >
+                  ⚡ Cargar Rubros FKUS
+                </button>
+                <button
+                  onClick={() => { setEditingCategory(null); setPresetParentName(''); setShowCategoryModal(true) }}
+                  className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-xs px-4 py-2.5 rounded-xl shadow-xs transition-all active:scale-95 cursor-pointer shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  Nueva Categoría
+                </button>
+              </div>
             </div>
 
             <div className="p-6">
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                {categories.map((category) => (
-                  <div key={category.id} className="flex items-center gap-4 bg-gray-50 border border-gray-150 rounded-2xl p-5 hover:border-gray-300 transition-colors">
-                    {/* Thumbnail/Preview */}
-                    <div className="relative w-24 h-24 bg-white border border-gray-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
-                      {category.image_url ? (
-                        <img src={category.image_url} alt={category.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="text-center text-xs text-gray-300 font-bold uppercase tracking-wider select-none">Sin foto</div>
-                      )}
-                    </div>
+              {(() => {
+                const mainParents = categories.filter((c: any) => !c.name.includes(' - '))
+                const subsByParent: Record<string, any[]> = {}
+                categories.forEach((c: any) => {
+                  if (c.name.includes(' - ')) {
+                    const pName = c.name.split(' - ')[0].trim()
+                    if (!subsByParent[pName]) subsByParent[pName] = []
+                    subsByParent[pName].push(c)
+                  }
+                })
 
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-extrabold text-gray-950 text-base truncate mb-1">
-                        {category.name}
-                      </h4>
-                      <p className="text-xs text-gray-400 mb-4 font-semibold">
-                        {category.image_url ? 'Imagen personalizada activa' : 'Usando logo por defecto'}
-                      </p>
+                const orphanSubCategories = categories.filter((c: any) => 
+                  c.name.includes(' - ') && !mainParents.some(p => p.name.toLowerCase().trim() === c.name.split(' - ')[0].toLowerCase().trim())
+                )
 
-                      <div className="flex items-center gap-2">
+                return (
+                  <div className="space-y-6 select-none">
+                    {mainParents.length === 0 && categories.length === 0 && (
+                      <div className="text-center py-12 text-slate-500 font-semibold text-sm bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-8">
+                        <p className="mb-3">No hay categorías ni subcategorías creadas todavía.</p>
                         <button
-                          onClick={() => { setEditingCategory(category); setShowCategoryModal(true) }}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 bg-white hover:bg-gray-50 shadow-sm cursor-pointer transition-colors"
+                          onClick={async () => {
+                            const res = await seedFkusCategories()
+                            if (res.success) notify(res.message, 'success')
+                            else notify(res.error, 'error')
+                          }}
+                          disabled={submitting}
+                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-colors shadow-xs"
                         >
-                          <Edit2 className="w-3.5 h-3.5" /> Editar
-                        </button>
-                        <button
-                          onClick={() => setConfirmDelCategory({ id: category.id, name: category.name })}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-red-200 text-xs font-bold text-red-650 bg-white hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" /> Eliminar
+                          ⚡ Cargar Rubros FKUS Automáticamente
                         </button>
                       </div>
+                    )}
+
+                    <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                      {mainParents.map((parent) => {
+                        const subs = subsByParent[parent.name] || []
+                        return (
+                          <div key={parent.id} className="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 hover:border-slate-300 hover:bg-white transition-all flex flex-col justify-between shadow-2xs">
+                            <div>
+                              {/* Header of main category */}
+                              <div className="flex items-start justify-between gap-3 mb-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="relative w-12 h-12 bg-white border border-slate-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center shadow-2xs">
+                                    {parent.image_url ? (
+                                      <img src={parent.image_url} alt={parent.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <span className="text-lg">📁</span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <h4 className="font-black text-slate-900 text-base uppercase tracking-wider">
+                                      {parent.name}
+                                    </h4>
+                                    <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                                      {subs.length} subcategoría{subs.length !== 1 ? 's' : ''}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    onClick={() => { setEditingCategory(parent); setPresetParentName(''); setShowCategoryModal(true) }}
+                                    className="p-2 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-100 transition-colors cursor-pointer"
+                                    title="Editar categoría principal"
+                                  >
+                                    <Edit2 className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => setConfirmDelCategory({ id: parent.id, name: parent.name })}
+                                    className="p-2 rounded-xl border border-red-200 text-red-600 bg-white hover:bg-red-50 transition-colors cursor-pointer"
+                                    title="Eliminar categoría principal"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Subcategories pill list */}
+                              <div className="mt-4 pt-3 border-t border-slate-200">
+                                <div className="flex items-center justify-between mb-2.5">
+                                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                    Subcategorías
+                                  </span>
+                                  <button
+                                    onClick={() => { setEditingCategory(null); setPresetParentName(parent.name); setShowCategoryModal(true) }}
+                                    className="text-[10px] font-black text-slate-900 hover:text-slate-600 uppercase tracking-wider cursor-pointer underline"
+                                  >
+                                    + Agregar Subcategoría
+                                  </button>
+                                </div>
+
+                                {subs.length > 0 ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {subs.map(sub => {
+                                      const subTitle = sub.name.split(' - ')[1] || sub.name
+                                      return (
+                                        <div key={sub.id} className="group flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-xs shadow-2xs">
+                                          <span className="font-bold text-slate-900">{subTitle}</span>
+                                          <div className="flex items-center gap-1 border-l border-slate-200 pl-1.5">
+                                            <button
+                                              onClick={() => { setEditingCategory(sub); setPresetParentName(parent.name); setShowCategoryModal(true) }}
+                                              className="text-slate-400 hover:text-slate-800 cursor-pointer"
+                                              title="Editar subcategoría"
+                                            >
+                                              <Edit2 className="w-3 h-3" />
+                                            </button>
+                                            <button
+                                              onClick={() => setConfirmDelCategory({ id: sub.id, name: sub.name })}
+                                              className="text-slate-400 hover:text-red-600 cursor-pointer"
+                                              title="Eliminar subcategoría"
+                                            >
+                                              <Trash2 className="w-3 h-3" />
+                                            </button>
+                                          </div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                ) : (
+                                  <p className="text-[11px] text-slate-400 font-semibold italic">
+                                    No hay subcategorías cargadas aún para {parent.name}.
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
+
+                    {/* Orphan subcategories if any */}
+                    {orphanSubCategories.length > 0 && (
+                      <div className="mt-6 pt-4 border-t border-slate-200">
+                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Otras Subcategorías</h4>
+                        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                          {orphanSubCategories.map(sub => (
+                            <div key={sub.id} className="flex items-center justify-between bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                              <span className="text-xs font-bold text-slate-900">{sub.name}</span>
+                              <div className="flex items-center gap-1">
+                                <button onClick={() => { setEditingCategory(sub); setPresetParentName(''); setShowCategoryModal(true) }} className="p-1.5 text-slate-500 hover:text-slate-900 cursor-pointer">
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button onClick={() => setConfirmDelCategory({ id: sub.id, name: sub.name })} className="p-1.5 text-slate-500 hover:text-red-600 cursor-pointer">
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                )
+              })()}
             </div>
           </div>
         )}
@@ -974,10 +1110,12 @@ export default function AdminPage() {
       )}
       <CategoryModal
         isOpen={showCategoryModal}
-        onClose={() => { setShowCategoryModal(false); setEditingCategory(null) }}
+        onClose={() => { setShowCategoryModal(false); setEditingCategory(null); setPresetParentName('') }}
         category={editingCategory}
         onSubmit={handleCategorySubmit}
         submitting={submitting}
+        categories={categories}
+        presetParentName={presetParentName}
       />
     </div>
   )

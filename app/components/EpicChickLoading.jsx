@@ -5,33 +5,31 @@ import React from 'react'
 
 const EpicChickLoading = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-950 relative overflow-hidden">
       {/* Container principal */}
       <div className="text-center z-10 relative px-4">
         {/* Logo animado */}
-        <div className="relative mb-6 flex justify-center">
-          <div className="relative inline-block animate-pulse duration-1000">
-            <img 
-              src="/tadeologo.png" 
-              alt="Tadeo Logo" 
-              className="w-44 h-44 object-contain"
-            />
+        <div className="relative mb-8 flex justify-center">
+          <div className="relative inline-block animate-pulse duration-1500">
+            <span className="font-sans text-5xl font-black text-white select-none">
+              F K U S
+            </span>
           </div>
         </div>
 
         {/* Texto con efectos */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-extrabold text-gray-800 tracking-tight">
-            Cargando catálogo
+        <div className="space-y-5">
+          <h2 className="text-sm font-black text-zinc-200 tracking-[0.25em] uppercase">
+            Cargando Colección Exclusiva
           </h2>
           
           {/* Barra de progreso animada */}
-          <div className="w-56 h-2 bg-gray-100 rounded-full mx-auto overflow-hidden shadow-inner">
-            <div className="h-full bg-amber-500 rounded-full animate-progress shadow-sm"></div>
+          <div className="w-48 h-1 bg-zinc-900 rounded-full mx-auto overflow-hidden">
+            <div className="h-full bg-white rounded-full animate-progress shadow-sm"></div>
           </div>
           
-          <p className="text-gray-500 text-sm font-medium">
-            Preparando los mejores productos para vos...
+          <p className="text-zinc-450 text-[10px] uppercase tracking-widest font-semibold">
+            Cargando experiencia F K U S...
           </p>
         </div>
       </div>

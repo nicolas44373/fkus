@@ -25,23 +25,25 @@ export function CartProvider({ children }) {
   useEffect(() => { localStorage.setItem('alenort-customer', JSON.stringify(customer)) }, [customer])
 
   const addItem = useCallback((product) => {
+    const key = product.cartItemId || String(product.id)
     setItems(prev => {
-      const existing = prev.find(i => i.id === product.id)
-      if (existing) return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i)
-      return [...prev, { ...product, quantity: 1 }]
+      const existing = prev.find(i => (i.cartItemId || String(i.id)) === key)
+      if (existing) return prev.map(i => (i.cartItemId || String(i.id)) === key ? { ...i, quantity: i.quantity + 1 } : i)
+      return [...prev, { ...product, cartItemId: key, quantity: 1 }]
     })
   }, [])
 
-  const removeItem  = useCallback((id) => setItems(prev => prev.filter(i => i.id !== id)), [])
+  const removeItem  = useCallback((key) => setItems(prev => prev.filter(i => (i.cartItemId || String(i.id)) !== String(key))), [])
 
-  const updateQty   = useCallback((id, qty) => {
-    if (qty <= 0) setItems(prev => prev.filter(i => i.id !== id))
-    else          setItems(prev => prev.map(i => i.id === id ? { ...i, quantity: qty } : i))
+  const updateQty   = useCallback((key, qty) => {
+    const sKey = String(key)
+    if (qty <= 0) setItems(prev => prev.filter(i => (i.cartItemId || String(i.id)) !== sKey))
+    else          setItems(prev => prev.map(i => (i.cartItemId || String(i.id)) === sKey ? { ...i, quantity: qty } : i))
   }, [])
 
   const clearCart   = useCallback(() => setItems([]), [])
 
-  const getQty      = useCallback((id) => items.find(i => i.id === id)?.quantity ?? 0, [items])
+  const getQty      = useCallback((key) => items.find(i => (i.cartItemId || String(i.id)) === String(key))?.quantity ?? 0, [items])
 
   const updateCustomer = useCallback((field, value) => {
     setCustomer(prev => ({ ...prev, [field]: value }))

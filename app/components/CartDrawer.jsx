@@ -171,7 +171,7 @@ export default function CartDrawer() {
     try {
       const orderPayload = {
         user_dni: activeDni || null,
-        items: items.map(i => ({ id: i.id, name: i.name, quantity: i.quantity, price: i.price, unit: i.unit })),
+        items: items.map(i => ({ id: i.id, name: i.name, quantity: i.quantity, price: i.price, selectedSize: i.selectedSize || null, selectedColor: i.selectedColor || null, unit: i.unit })),
         total: total,
         status: 'Pendiente',
         points_awarded: false,
@@ -196,11 +196,12 @@ export default function CartDrawer() {
 
     const date = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
     
-    // Lista de ítems formateada de manera muy clara
+    // Lista de ítems formateada de manera muy clara con talle y color
     const lines = items.map(item => {
       const sub = parseFloat(item.price || 0) * item.quantity
       const unit = item.unit ? ` (${item.unit})` : ''
-      return `  • *${item.quantity}* × ${item.name}${unit}\n    Subtotal: *${fmt(sub.toString())}*`
+      const variantText = (item.selectedSize || item.selectedColor) ? ` [${[item.selectedColor, item.selectedSize].filter(Boolean).join(', ')}]` : ''
+      return `  • *${item.quantity}* × ${item.name}${variantText}${unit}\n    Subtotal: *${fmt(sub.toString())}*`
     })
 
     // Crear link de Google Maps con las coordenadas precisas
@@ -208,10 +209,10 @@ export default function CartDrawer() {
     const clubCode = user?.club_code || loadedFromCodeUser?.club_code
 
     const message = [
-      '🛒 *NUEVO PEDIDO — ALENORT*',
+      '🛒 *NUEVO PEDIDO — FKUS*',
       `📅 Fecha: ${date}`,
       orderId ? `🆔 *ID Pedido Club:* #${orderId}` : null,
-      clubCode ? `⭐ *Socio Club Alenort:* #${clubCode}` : null,
+      clubCode ? `⭐ *Socio Club FKUS:* #${clubCode}` : null,
       '',
       '━━━━━━━━━━━━━━━━━━━━━',
       '👤 *DATOS DE ENTREGA:*',
@@ -230,9 +231,8 @@ export default function CartDrawer() {
       `💰 *TOTAL ESTIMADO: ${fmt(total.toString())}*`,
       '━━━━━━━━━━━━━━━━━━━━━',
       '',
-      '🚚 Envíos 100% GRATIS',
-      '🕗 Horario: 8:30 a 20:00 hs (Reparto al día siguiente)',
-      clubCode ? '🎁 Este pedido sumará puntos Club Alenort al confirmarse.' : null,
+      '🚚 Envíos Premium FKUS',
+      clubCode ? '🎁 Este pedido sumará puntos Club FKUS al confirmarse.' : null,
       '',
       'Por favor confirmen disponibilidad y costo final de los productos.',
       '¡Muchas gracias! 🙌',
@@ -384,25 +384,46 @@ export default function CartDrawer() {
                     <div className="space-y-3">
                       {items.map(item => {
                         const subtotal = parseFloat(item.price || 0) * item.quantity
+                        const itemKey = item.cartItemId || String(item.id)
                         return (
-                          <div key={item.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col gap-3">
+                          <div key={itemKey} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col gap-3">
                             <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">{item.name}</p>
-                                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                                  {item.categoryName && (
-                                    <span className="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded-full">
-                                      {item.categoryName}
-                                    </span>
+                              <div className="flex gap-3 min-w-0 flex-1">
+                                {/* Thumbnail */}
+                                <div className="w-12 h-16 bg-zinc-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center">
+                                  {item.image_url ? (
+                                    <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <span className="text-xl">🧥</span>
                                   )}
-                                  <span className="text-xs font-semibold text-gray-400">
-                                    {fmt(item.price)} c/u
-                                  </span>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">{item.name}</p>
+                                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                    {item.categoryName && (
+                                      <span className="text-[9px] font-black uppercase bg-zinc-100 text-zinc-650 border border-zinc-200 px-1.5 py-0.5 rounded">
+                                        {item.categoryName}
+                                      </span>
+                                    )}
+                                    {item.selectedColor && (
+                                      <span className="text-[9px] font-black uppercase bg-zinc-900 text-zinc-200 border border-zinc-800 px-1.5 py-0.5 rounded">
+                                        {item.selectedColor}
+                                      </span>
+                                    )}
+                                    {item.selectedSize && (
+                                      <span className="text-[9px] font-black uppercase bg-zinc-900 text-zinc-200 border border-zinc-800 px-1.5 py-0.5 rounded">
+                                        {item.selectedSize}
+                                      </span>
+                                    )}
+                                    <span className="text-xs font-semibold text-gray-400">
+                                      {fmt(item.price)} c/u
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                               <button
-                                onClick={() => removeItem(item.id)}
-                                className="shrink-0 p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                onClick={() => removeItem(itemKey)}
+                                className="shrink-0 p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all animate-none"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -412,14 +433,14 @@ export default function CartDrawer() {
                               {/* Quantity Controls */}
                               <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
                                 <button
-                                  onClick={() => updateQty(item.id, item.quantity - 1)}
+                                  onClick={() => updateQty(itemKey, item.quantity - 1)}
                                   className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-white active:scale-90 transition-all font-bold text-sm"
                                 >
                                   <Minus className="h-3.5 w-3.5" />
                                 </button>
                                 <span className="w-9 text-center font-extrabold text-gray-900 text-sm">{item.quantity}</span>
                                 <button
-                                  onClick={() => updateQty(item.id, item.quantity + 1)}
+                                  onClick={() => updateQty(itemKey, item.quantity + 1)}
                                   className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-white active:scale-90 transition-all font-bold text-sm"
                                 >
                                   <Plus className="h-3.5 w-3.5" />
@@ -641,7 +662,7 @@ export default function CartDrawer() {
                           <p className="text-xs font-medium text-gray-500 mt-0.5">{customer.celular}</p>
                           {(user || loadedFromCodeUser) && (
                             <span className="inline-block bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase px-2 py-0.5 rounded-md mt-1.5 border border-emerald-100">
-                              ⭐ Socio Club Alenort: #{user?.club_code || loadedFromCodeUser?.club_code}
+                              ⭐ Socio Club FKUS: #{user?.club_code || loadedFromCodeUser?.club_code}
                             </span>
                           )}
                         </div>
@@ -673,11 +694,16 @@ export default function CartDrawer() {
                     {/* Resumen productos */}
                     <div className="bg-white rounded-2xl border border-gray-100 p-4 divide-y divide-gray-50 shadow-sm max-h-56 overflow-y-auto">
                       {items.map(item => (
-                        <div key={item.id} className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
+                        <div key={item.cartItemId || String(item.id)} className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
                           <div className="min-w-0">
                             <p className="font-bold text-gray-800 truncate">{item.name}</p>
                             <p className="text-[10px] text-gray-400 mt-0.5">
                               {item.quantity} × {fmt(item.price)} {item.unit ? `(${item.unit})` : ''}
+                              {(item.selectedSize || item.selectedColor) && (
+                                <span className="ml-1 font-bold text-gray-500">
+                                  [{[item.selectedColor, item.selectedSize].filter(Boolean).join(', ')}]
+                                </span>
+                              )}
                             </p>
                           </div>
                           <p className="font-extrabold text-gray-800 shrink-0">
@@ -691,9 +717,9 @@ export default function CartDrawer() {
                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-3.5">
                       <p className="text-[11px] text-blue-800 font-medium leading-relaxed">
                         {user || loadedFromCodeUser ? (
-                          `🎁 ¡Sumás puntos! Al confirmar tu compra, se acreditarán ${Math.floor(total / 10000)} puntos en tu cuenta Club Alenort (1 punto cada $10.000).`
+                          `🎁 ¡Sumás puntos! Al confirmar tu compra, se acreditarán ${Math.floor(total / 10000)} puntos en tu cuenta Club FKUS (1 punto cada $10.000).`
                         ) : (
-                          '💡 Tu pedido se enviará por WhatsApp. Si tuvieras cuenta Club Alenort, podrías sumar puntos con este pedido.'
+                          '💡 Tu pedido se enviará por WhatsApp. Si tuvieras cuenta Club FKUS, podrías sumar puntos con este pedido.'
                         )}
                       </p>
                     </div>
