@@ -1,14 +1,15 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { compressImage } from '@/lib/imageCompress'
 
 type Props = {
   isVisible: boolean
   isEditing: boolean
   categories: any[]
   submitting: boolean
-  initialData: { name?: string; price?: string; compare_at_price?: string; sizes?: string; colors?: string; unit?: string; category_id?: string; marca?: string; in_stock?: boolean; image_url?: string } | null
-  onSubmit: (data: { name: string; price: string; compare_at_price?: string; sizes?: string; colors?: string; unit?: string; category_id: string; marca?: string; in_stock: boolean; image_url?: string }) => Promise<any>
+  initialData: { name?: string; price?: string; compare_at_price?: string; sizes?: string; colors?: string; unit?: string; category_id?: string; marca?: string; stock_quantity?: number; image_urls?: string[] } | null
+  onSubmit: (data: { name: string; price: string; compare_at_price?: string; sizes?: string; colors?: string; unit?: string; category_id: string; marca?: string; stock_quantity: number; image_urls: string[] }) => Promise<any>
   onCancel: () => void
   onOpenCategoryModal?: () => void
 }
@@ -16,7 +17,7 @@ type Props = {
 const field = 'w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:bg-white transition-all font-semibold'
 
 export default function ProductForm({ isVisible, isEditing, categories, submitting, initialData, onSubmit, onCancel, onOpenCategoryModal }: Props) {
-  const [form, setForm] = useState({ name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', in_stock: true, image_url: '' })
+  const [form, setForm] = useState({ name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', stock_quantity: 0, image_urls: [] as string[] })
   const [uploading, setUploading] = useState(false)
 
   // Categorías agrupadas
@@ -38,28 +39,40 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
   )
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
     try {
       setUploading(true)
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      })
-      const result = await res.json()
-      if (result.success && result.imageUrl) {
-        set('image_url', result.imageUrl)
-      } else {
-        alert(result.error || 'Error al subir la imagen')
+      const uploaded: string[] = []
+      for (const rawFile of files) {
+        const file = await compressImage(rawFile)
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        })
+        const result = await res.json()
+        if (result.success && result.imageUrl) {
+          uploaded.push(result.imageUrl)
+        } else {
+          alert(result.error || `Error al subir ${file.name}`)
+        }
+      }
+      if (uploaded.length > 0) {
+        setForm(f => ({ ...f, image_urls: [...f.image_urls, ...uploaded] }))
       }
     } catch (err) {
       console.error(err)
       alert('Error en la subida de imagen')
     } finally {
       setUploading(false)
+      e.target.value = ''
     }
+  }
+
+  const removeImage = (url: string) => {
+    setForm(f => ({ ...f, image_urls: f.image_urls.filter(u => u !== url) }))
   }
 
   useEffect(() => {
@@ -73,11 +86,11 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
         unit:             initialData.unit             ?? '',
         category_id:      initialData.category_id      ?? '',
         marca:            initialData.marca            ?? '',
-        in_stock:         initialData.in_stock         ?? true,
-        image_url:        initialData.image_url        ?? '',
+        stock_quantity:   initialData.stock_quantity   ?? 0,
+        image_urls:       initialData.image_urls       ?? [],
       })
     } else {
-      setForm({ name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', in_stock: true, image_url: '' })
+      setForm({ name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', stock_quantity: 0, image_urls: [] })
     }
   }, [initialData])
 
@@ -94,8 +107,8 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
       unit:             form.unit.trim() || undefined,
       category_id:      form.category_id,
       marca:            form.marca.trim() || undefined,
-      in_stock:         form.in_stock,
-      image_url:        form.image_url || undefined,
+      stock_quantity:   Number(form.stock_quantity) || 0,
+      image_urls:       form.image_urls,
     })
   }
 
@@ -290,32 +303,38 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
             />
           </div>
 
-          {/* Imagen del Producto — ancho completo */}
+          {/* Imágenes del Producto — ancho completo */}
           <div className="sm:col-span-2">
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-              Imagen del producto <span className="text-slate-400 font-normal">(opcional)</span>
+              Imágenes del producto <span className="text-slate-400 font-normal">(opcional, podés subir varias)</span>
             </label>
-            <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
-              {form.image_url ? (
-                <div className="relative w-20 h-20 bg-white border border-slate-200 rounded-lg overflow-hidden shrink-0 group">
-                  <img src={form.image_url} alt="Vista previa" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => set('image_url', '')}
-                    className="absolute inset-0 bg-slate-900/80 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ) : (
-                <div className="w-20 h-20 bg-white border border-dashed border-slate-300 rounded-lg flex items-center justify-center text-2xl text-slate-300 shrink-0 select-none">
-                  🖼️
+            <div className="flex flex-col gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+              {form.image_urls.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  {form.image_urls.map((url, idx) => (
+                    <div key={url} className="relative w-20 h-20 bg-white border border-slate-200 rounded-lg overflow-hidden shrink-0 group">
+                      <img src={url} alt={`Imagen ${idx + 1}`} className="w-full h-full object-cover" />
+                      {idx === 0 && (
+                        <span className="absolute top-1 left-1 bg-slate-900/80 text-white text-[9px] font-bold uppercase px-1.5 py-0.5 rounded">
+                          Portada
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(url)}
+                        className="absolute inset-0 bg-slate-900/80 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
-              <div className="flex-1">
+              <div>
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handleFileChange}
                   id="product_image_file"
                   className="hidden"
@@ -325,25 +344,28 @@ export default function ProductForm({ isVisible, isEditing, categories, submitti
                   htmlFor="product_image_file"
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 shadow-xs cursor-pointer transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
-                  {uploading ? 'Subiendo...' : 'Subir imagen'}
+                  {uploading ? 'Subiendo...' : form.image_urls.length > 0 ? 'Agregar más imágenes' : 'Subir imágenes'}
                 </label>
-                <p className="text-[11px] text-slate-400 mt-1">Formatos: JPG, PNG, WEBP. Tamaño recomendado: 800x600 px.</p>
+                <p className="text-[11px] text-slate-400 mt-1">Formatos: JPG, PNG, WEBP. Tamaño recomendado: 800x600 px. La primera imagen es la portada.</p>
               </div>
             </div>
           </div>
 
-          {/* Stock Switch — ancho completo */}
-          <div className="sm:col-span-2 flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
-            <input
-              type="checkbox"
-              id="form_in_stock"
-              checked={form.in_stock}
-              onChange={e => set('in_stock', e.target.checked)}
-              className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-400 cursor-pointer accent-slate-900"
-            />
-            <label htmlFor="form_in_stock" className="text-sm font-bold text-slate-800 cursor-pointer select-none">
-              Hay stock disponible de este producto
+          {/* Cantidad en stock — ancho completo */}
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Cantidad en stock
             </label>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              value={form.stock_quantity}
+              onChange={e => set('stock_quantity', e.target.value === '' ? 0 : parseInt(e.target.value, 10))}
+              placeholder="0"
+              className={`${field} sm:max-w-[200px]`}
+            />
+            <p className="text-[11px] text-slate-400 mt-1">Cuando llega a 0 el producto deja de mostrarse en el catálogo.</p>
           </div>
 
         </div>

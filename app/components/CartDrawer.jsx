@@ -194,6 +194,17 @@ export default function CartDrawer() {
       console.error('Error al registrar pedido en Supabase:', e)
     }
 
+    // Descontar stock de cada producto comprado (no bloquea el checkout si falla)
+    try {
+      await Promise.all(
+        items.map(item =>
+          supabase.rpc('decrement_stock', { product_id: item.id, qty: item.quantity })
+        )
+      )
+    } catch (e) {
+      console.error('Error al descontar stock:', e)
+    }
+
     const date = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
     
     // Lista de ítems formateada de manera muy clara con talle y color
@@ -392,7 +403,7 @@ export default function CartDrawer() {
                                 {/* Thumbnail */}
                                 <div className="w-12 h-16 bg-zinc-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center">
                                   {item.image_url ? (
-                                    <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                                    <img src={item.image_url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                   ) : (
                                     <span className="text-xl">🧥</span>
                                   )}

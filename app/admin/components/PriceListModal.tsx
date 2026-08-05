@@ -17,7 +17,7 @@ const fmt = (price: string | null) => {
 }
 
 export default function PriceListModal({ products, onClose }: Props) {
-  const available = products.filter(p => p.price && p.in_stock)
+  const available = products.filter(p => p.price && (p.stock_quantity ?? 0) > 0)
 
   const grouped = available.reduce((acc, p) => {
     const cat = p.category_name || 'Sin categoría'

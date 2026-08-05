@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import WhatsAppFAB from './components/WhatsAppFAB'
 import Header from './components/Header'
 import { useCart } from './context/CartContext'
-import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
 
 type ProductRow = {
   id: number | string
@@ -18,8 +18,8 @@ type ProductRow = {
   unit: string | null
   category_id: number | string
   marca: string | null
-  in_stock?: boolean
-  image_url?: string | null
+  stock_quantity?: number
+  image_urls?: string[] | null
   created_at: string
   updated_at: string
   categories?: {
@@ -46,6 +46,7 @@ const ProductCard = ({
   onAdd,
   onUpdateQty,
   onOpenCart,
+  onOpenDetail,
 }: {
   product: ProductRow
   qty: number
@@ -58,8 +59,11 @@ const ProductCard = ({
   onAdd: (size: string, color: string) => void
   onUpdateQty: (qty: number) => void
   onOpenCart: () => void
+  onOpenDetail: () => void
 }) => {
-  const [effects, setEffects] = useState<{ id: number }[]>([])
+  const images = product.image_urls && product.image_urls.length > 0 ? product.image_urls : []
+  const [imgIndex, setImgIndex] = useState(0)
+  const [justAdded, setJustAdded] = useState(false)
 
   const sizeList = product.sizes ? product.sizes.split(',').map(s => s.trim()).filter(Boolean) : []
   const colorList = product.colors ? product.colors.split(',').map(c => c.trim()).filter(Boolean) : []
@@ -71,150 +75,150 @@ const ProductCard = ({
     ? Math.round((1 - parseFloat(product.price || '0') / parseFloat(product.compare_at_price)) * 100)
     : 0
 
-  const triggerEffect = () => {
-    const newId = Date.now() + Math.random()
-    setEffects(prev => [...prev, { id: newId }])
-    setTimeout(() => {
-      setEffects(prev => prev.filter(e => e.id !== newId))
-    }, 800)
-  }
-
-  const handleAdd = () => {
-    triggerEffect()
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation()
     onAdd(selectedSize, selectedColor)
+    setJustAdded(true)
+    setTimeout(() => setJustAdded(false), 1600)
   }
 
   return (
-    <div className={`relative rounded-[2rem] border shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col ${card}`}>
-      {/* Absolute floating +1 bubbles */}
-      <AnimatePresence>
-        {effects.map(eff => {
-          const label = '🛍️ +1'
-          return (
-            <motion.span
-              key={eff.id}
-              initial={{ opacity: 0, y: 15, scale: 0.5 }}
-              animate={{ opacity: [0, 1, 1, 0], y: -75, scale: [0.8, 1.2, 1, 0.8], rotate: Math.random() * 20 - 10 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black font-black text-[10px] px-3 py-1.5 rounded-full shadow-lg border-2 border-black z-20 pointer-events-none select-none flex items-center gap-1 shrink-0 uppercase tracking-widest"
-            >
-              {label}
-            </motion.span>
-          )
-        })}
-      </AnimatePresence>
+    <div onClick={onOpenDetail} className="group/card relative flex flex-col cursor-pointer">
 
       {/* Imagen del Producto - Portrait Aspect Ratio */}
-      <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-900 border-b border-zinc-800 flex items-center justify-center shrink-0">
-        {product.image_url ? (
-          <img 
-            src={product.image_url} 
-            alt={product.name} 
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-925 flex items-center justify-center shrink-0 group/gallery">
+        {images.length > 0 ? (
+          <img
+            src={images[imgIndex]}
+            alt={product.name}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover/card:scale-[1.035]"
           />
         ) : (
-          <span className="text-3xl text-zinc-700">🧥</span>
+          <span className="text-2xl text-zinc-700 font-light tracking-widest">FKUS</span>
         )}
-        
-        {/* Badge 30% OFF */}
+
+        {/* Flechas de navegación (solo si hay más de una imagen) */}
+        {images.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setImgIndex(i => (i - 1 + images.length) % images.length) }}
+              className="absolute left-0 top-0 bottom-0 w-1/4 flex items-center justify-start pl-2 text-white opacity-0 group-hover/gallery:opacity-100 transition-opacity duration-200 z-10 cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setImgIndex(i => (i + 1) % images.length) }}
+              className="absolute right-0 top-0 bottom-0 w-1/4 flex items-center justify-end pr-2 text-white opacity-0 group-hover/gallery:opacity-100 transition-opacity duration-200 z-10 cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" strokeWidth={1.5} />
+            </button>
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 z-10">
+              {images.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`h-px transition-all duration-300 ${idx === imgIndex ? 'w-4 bg-white' : 'w-2.5 bg-white/40'}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Etiqueta de descuento */}
         {discount > 0 && (
-          <div className="absolute top-3.5 left-3.5 bg-black text-white text-[9px] font-black px-2.5 py-1 tracking-widest uppercase z-10 border border-zinc-800/80 shadow-md">
-            {discount}% OFF
+          <div className="absolute top-3 left-3 border border-white/70 text-white text-[9px] font-medium px-2 py-[3px] tracking-[0.15em] uppercase z-10">
+            −{discount}%
           </div>
         )}
-      </div>
 
-      <div className="p-5 flex flex-col flex-1 bg-zinc-900/40 backdrop-blur-sm">
-        
-        {/* Selectores de Talle y Color */}
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <div>
-            <label className="block text-[9px] font-black text-zinc-350 uppercase tracking-wider mb-1">
-              Color
-            </label>
-            <div className="relative">
-              <select
-                value={selectedColor}
-                onChange={e => setSelectedColor(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-850 hover:border-zinc-700 text-[11px] font-bold px-2.5 py-2 rounded-xl text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-600 appearance-none cursor-pointer"
-              >
-                {colorList.length > 0 ? (
-                  colorList.map(c => <option key={c} value={c}>{c}</option>)
-                ) : (
-                  <option value="">Único</option>
-                )}
-              </select>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-300 text-[9px]">
-                ▼
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-[9px] font-black text-zinc-350 uppercase tracking-wider mb-1">
-              Talle
-            </label>
-            <div className="relative">
-              <select
-                value={selectedSize}
-                onChange={e => setSelectedSize(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-850 hover:border-zinc-700 text-[11px] font-bold px-2.5 py-2 rounded-xl text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-600 appearance-none cursor-pointer"
-              >
-                {sizeList.length > 0 ? (
-                  sizeList.map(s => <option key={s} value={s}>{s}</option>)
-                ) : (
-                  <option value="">Único</option>
-                )}
-              </select>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-300 text-[9px]">
-                ▼
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Botón AGREGAR AL CARRITO con línea arriba y abajo */}
+        {/* Botón agregar al carrito — overlay que aparece al pasar el mouse */}
         {hasPrice && (
           <button
             onClick={handleAdd}
-            className="w-full border-y border-zinc-800 hover:border-zinc-600 hover:bg-white hover:text-black py-2.5 uppercase tracking-[0.2em] text-[10px] font-black text-center cursor-pointer transition-all duration-300 text-zinc-200 mb-4 select-none"
+            className={`absolute left-0 right-0 bottom-0 py-3 uppercase tracking-[0.2em] text-[10px] font-semibold text-center cursor-pointer transition-all duration-300 select-none z-10 ${
+              justAdded
+                ? 'bg-white text-black translate-y-0'
+                : 'bg-black/85 text-white translate-y-full group-hover/card:translate-y-0 hover:bg-black'
+            }`}
           >
-            Agregar al carrito
+            {justAdded ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Check className="w-3 h-3" strokeWidth={2.5} /> Agregado
+              </span>
+            ) : (
+              'Añadir al carrito'
+            )}
           </button>
+        )}
+      </div>
+
+      <div className="p-4 flex flex-col flex-1 bg-zinc-950/90 backdrop-blur-md border-x border-b border-zinc-900">
+
+        {/* Marca */}
+        {product.marca && (
+          <span className="text-[9px] font-medium text-zinc-400 tracking-[0.2em] uppercase mb-1">
+            {product.marca}
+          </span>
         )}
 
         {/* Nombre del Producto */}
-        <h3 className="font-extrabold text-xs text-zinc-100 uppercase tracking-wide leading-snug line-clamp-2 mb-2 min-h-[32px]" title={product.name}>
+        <h3 className="text-[11px] text-white tracking-wide leading-snug line-clamp-2 mb-2 min-h-[28px]" title={product.name}>
           {product.name}
         </h3>
 
-        {/* Marca y Precios */}
-        <div className="mt-auto pt-2 border-t border-zinc-800/40 flex items-center justify-between gap-2">
+        {/* Precio */}
+        <div className="flex items-baseline gap-2 mb-3">
           {product.price && (
-            <div className="flex items-baseline gap-2">
-              <span className="font-black text-sm sm:text-base text-white">
-                {formatMoney(product.price)}
-              </span>
-              {product.compare_at_price && parseFloat(product.compare_at_price) > parseFloat(product.price || '0') && (
-                <span className="text-[11px] text-zinc-550 line-through font-medium">
-                  {formatMoney(product.compare_at_price)}
-                </span>
-              )}
-            </div>
+            <span className="text-[13px] font-medium text-white">
+              {formatMoney(product.price)}
+            </span>
           )}
+          {product.compare_at_price && parseFloat(product.compare_at_price) > parseFloat(product.price || '0') && (
+            <span className="text-[11px] text-zinc-500 line-through font-light">
+              {formatMoney(product.compare_at_price)}
+            </span>
+          )}
+        </div>
 
-          <div className="flex flex-col items-end shrink-0">
-            {product.marca && (
-              <span className="text-[9px] font-black text-zinc-350 tracking-wider uppercase">
-                {product.marca}
-              </span>
-            )}
-            {product.unit && (
-              <span className="text-[8px] font-extrabold text-zinc-250 tracking-widest uppercase mt-0.5">
-                {product.unit}
-              </span>
-            )}
+        {/* Selectores de Talle y Color */}
+        <div className="grid grid-cols-2 gap-3 mt-auto pt-3 border-t border-zinc-800">
+          <div className="relative">
+            <select
+              value={selectedColor}
+              onChange={e => setSelectedColor(e.target.value)}
+              onClick={e => e.stopPropagation()}
+              className="w-full bg-transparent border-b border-zinc-700 hover:border-zinc-400 text-[10px] font-medium tracking-wider uppercase pb-1.5 pr-4 text-zinc-300 focus:outline-none focus:border-white appearance-none cursor-pointer transition-colors"
+            >
+              {colorList.length > 0 ? (
+                colorList.map(c => <option key={c} value={c} className="bg-zinc-900">{c}</option>)
+              ) : (
+                <option value="">Color único</option>
+              )}
+            </select>
+            <div className="absolute right-0 bottom-1.5 pointer-events-none text-zinc-500 text-[8px]">
+              ▾
+            </div>
+          </div>
+
+          <div className="relative">
+            <select
+              value={selectedSize}
+              onChange={e => setSelectedSize(e.target.value)}
+              onClick={e => e.stopPropagation()}
+              className="w-full bg-transparent border-b border-zinc-700 hover:border-zinc-400 text-[10px] font-medium tracking-wider uppercase pb-1.5 pr-4 text-zinc-300 focus:outline-none focus:border-white appearance-none cursor-pointer transition-colors"
+            >
+              {sizeList.length > 0 ? (
+                sizeList.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)
+              ) : (
+                <option value="">Talle único</option>
+              )}
+            </select>
+            <div className="absolute right-0 bottom-1.5 pointer-events-none text-zinc-500 text-[8px]">
+              ▾
+            </div>
           </div>
         </div>
       </div>
@@ -224,6 +228,7 @@ const ProductCard = ({
 
 function CatalogContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const categoryId = searchParams.get('category')
   const { addItem, updateQty, getQty, setIsOpen } = useCart()
 
@@ -234,6 +239,7 @@ function CatalogContent() {
   const [error, setError]             = useState<string | null>(null)
   const [darkMode, setDarkMode]       = useState(true)
   const [showContactMenu, setShowContactMenu] = useState(false)
+  const [selectedGender, setSelectedGender] = useState<'Todos' | 'Hombre' | 'Mujer'>('Todos')
 
   useEffect(() => {
     const saved = localStorage.getItem('darkMode')
@@ -281,8 +287,8 @@ function CatalogContent() {
         let prods = null
         let query = supabase
           .from('products')
-          .select('id, name, price, compare_at_price, sizes, colors, unit, marca, category_id, in_stock, image_url, categories(name)')
-          .eq('in_stock', true)
+          .select('id, name, price, compare_at_price, sizes, colors, unit, marca, category_id, stock_quantity, image_urls, categories(name)')
+          .gt('stock_quantity', 0)
           .not('price', 'is', null)
           .order('name')
 
@@ -297,8 +303,8 @@ function CatalogContent() {
             console.warn('Supabase: Las columnas de indumentaria no existen todavía. Ejecutando fallback.')
             let fallbackQuery = supabase
               .from('products')
-              .select('id, name, price, unit, marca, category_id, in_stock, image_url, categories(name)')
-              .eq('in_stock', true)
+              .select('id, name, price, unit, marca, category_id, stock_quantity, image_urls, categories(name)')
+              .gt('stock_quantity', 0)
               .not('price', 'is', null)
               .order('name')
 
@@ -355,7 +361,7 @@ function CatalogContent() {
         selectedColor: color || undefined,
         unit:         product.unit ?? undefined,
         categoryName: product.categories?.name ?? undefined,
-        image_url:    product.image_url ?? undefined,
+        image_url:    product.image_urls?.[0] ?? undefined,
       })
     }
 
@@ -372,6 +378,7 @@ function CatalogContent() {
         onAdd={handleAdd}
         onUpdateQty={(newQty) => updateQty(product.cartItemId || product.id, newQty)}
         onOpenCart={() => setIsOpen(true)}
+        onOpenDetail={() => router.push(`/producto/${product.id}`)}
       />
     )
   }
@@ -406,6 +413,7 @@ function CatalogContent() {
 
   const searchTerm = searchParams.get('search') || ''
   const searchedProducts = products.filter(p => {
+    if (selectedGender !== 'Todos' && p.unit !== selectedGender) return false
     if (!searchTerm) return true
     const term = searchTerm.toLowerCase()
     return (
@@ -475,6 +483,23 @@ function CatalogContent() {
             )}
           </h1>
 
+          {/* Pestañas de Género */}
+          <div className="flex items-center gap-2 mb-5">
+            {(['Todos', 'Hombre', 'Mujer'] as const).map(g => (
+              <button
+                key={g}
+                onClick={() => setSelectedGender(g)}
+                className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer border ${
+                  selectedGender === g
+                    ? 'bg-white text-black border-white'
+                    : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-zinc-400 hover:text-white'
+                }`}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+
           {/* Filtrar y Ordenar Trigger Link */}
           <div>
             <button
@@ -507,7 +532,7 @@ function CatalogContent() {
                       <h2 className={`text-lg font-black uppercase tracking-[0.15em] ${txt}`}>{catName}</h2>
                       <span className="text-xs text-zinc-300 font-bold">({list.length})</span>
                     </div>
-                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid gap-x-6 gap-y-12 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       {list.map(p => <ProductCardWrapper key={p.id} product={p} />)}
                     </div>
                   </div>
@@ -515,7 +540,7 @@ function CatalogContent() {
               </div>
             ) : (
               // Filtered category view
-              <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-x-6 gap-y-12 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {searchedProducts.map(p => <ProductCardWrapper key={p.id} product={p} />)}
               </div>
             )}

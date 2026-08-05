@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { compressImage } from '@/lib/imageCompress'
 
 type Props = {
   isOpen: boolean
@@ -58,10 +59,11 @@ export default function CategoryModal({ isOpen, onClose, category, onSubmit, sub
   }, [category, isOpen, categories, presetParentName])
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const rawFile = e.target.files?.[0]
+    if (!rawFile) return
     try {
       setUploading(true)
+      const file = await compressImage(rawFile)
       const formData = new FormData()
       formData.append('file', file)
       const res = await fetch('/api/upload', {

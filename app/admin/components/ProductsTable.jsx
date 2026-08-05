@@ -18,7 +18,7 @@ export default function ProductsTable({
   onToggleSort,
   onEdit,
   onDelete,
-  onToggleStock,
+  onUpdateStock,
   onUpdatePriceInline,
   submitting,
   editingId
@@ -26,6 +26,10 @@ export default function ProductsTable({
   const [editingPriceId, setEditingPriceId] = useState(null)
   const [tempPrice, setTempPrice] = useState('')
   const [savingPrice, setSavingPrice] = useState(false)
+
+  const [editingStockId, setEditingStockId] = useState(null)
+  const [tempStock, setTempStock] = useState('')
+  const [savingStock, setSavingStock] = useState(false)
 
   const allSelected = products.length > 0 && products.every(p => selectedIds.includes(p.id))
   const partialSelected = products.length > 0 && !allSelected && products.some(p => selectedIds.includes(p.id))
@@ -44,6 +48,23 @@ export default function ProductsTable({
       console.error(err)
     } finally {
       setSavingPrice(false)
+    }
+  }
+
+  const handleStartEditStock = (product) => {
+    setEditingStockId(product.id)
+    setTempStock(String(product.stock_quantity ?? 0))
+  }
+
+  const handleSaveStock = async (id) => {
+    setSavingStock(true)
+    try {
+      await onUpdateStock(id, parseInt(tempStock, 10) || 0)
+      setEditingStockId(null)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setSavingStock(false)
     }
   }
 
@@ -114,7 +135,7 @@ export default function ProductsTable({
                 {renderSortHeader('name', 'Producto')}
                 {renderSortHeader('category', 'Categoría', 'text-left hidden sm:table-cell')}
                 {renderSortHeader('marca', 'Marca', 'text-left hidden md:table-cell')}
-                {renderSortHeader('in_stock', 'Stock', 'text-center w-28')}
+                {renderSortHeader('stock_quantity', 'Stock', 'text-center w-28')}
                 {renderSortHeader('price', 'Precio', 'text-right pr-8')}
                 <th className="px-5 py-3 text-xs font-black text-slate-600 uppercase tracking-wider text-center w-24">Acciones</th>
               </tr>
@@ -149,11 +170,16 @@ export default function ProductsTable({
                           <span className="shrink-0 w-2 h-2 rounded-full bg-amber-500" />
                         )}
                         {/* Thumbnail */}
-                        <div className="w-10 h-10 bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
-                          {product.image_url ? (
-                            <img src={product.image_url} alt="" className="w-full h-full object-cover" />
+                        <div className="relative w-10 h-10 bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shrink-0 flex items-center justify-center">
+                          {product.image_urls?.[0] ? (
+                            <img src={product.image_urls[0]} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                           ) : (
                             <Package className="w-5 h-5 text-slate-400" />
+                          )}
+                          {product.image_urls?.length > 1 && (
+                            <span className="absolute bottom-0 right-0 bg-slate-900/85 text-white text-[8px] font-bold px-1 rounded-tl-md leading-tight">
+                              🖼 {product.image_urls.length}
+                            </span>
                           )}
                         </div>
                         <div className="flex flex-col">
@@ -213,20 +239,53 @@ export default function ProductsTable({
                       )}
                     </td>
 
-                    {/* Stock status toggle button */}
+                    {/* Cantidad en stock (edición inline) */}
                     <td className="px-3 sm:px-5 py-3 text-center">
-                      <button
-                        onClick={() => onToggleStock(product.id, product.in_stock)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all cursor-pointer select-none ${
-                          product.in_stock
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 active:scale-95'
-                            : 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 active:scale-95'
-                        }`}
-                        title="Hacé clic para cambiar el stock"
-                      >
-                        <span className={`w-2 h-2 rounded-full ${product.in_stock ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        {product.in_stock ? 'Con Stock' : 'Sin Stock'}
-                      </button>
+                      {editingStockId === product.id ? (
+                        <div className="flex items-center justify-center gap-1">
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={tempStock}
+                            disabled={savingStock}
+                            onChange={e => setTempStock(e.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') handleSaveStock(product.id)
+                              if (e.key === 'Escape') setEditingStockId(null)
+                            }}
+                            className="w-16 px-2 py-1 border border-slate-300 rounded-lg text-center font-black text-sm bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => handleSaveStock(product.id)}
+                            disabled={savingStock}
+                            className="p-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors cursor-pointer"
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setEditingStockId(null)}
+                            disabled={savingStock}
+                            className="p-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors cursor-pointer"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleStartEditStock(product)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all cursor-pointer select-none ${
+                            product.stock_quantity > 0
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 active:scale-95'
+                              : 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 active:scale-95'
+                          }`}
+                          title="Hacé clic para editar la cantidad en stock"
+                        >
+                          <span className={`w-2 h-2 rounded-full ${product.stock_quantity > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                          {product.stock_quantity > 0 ? `${product.stock_quantity} en stock` : 'Sin Stock'}
+                        </button>
+                      )}
                     </td>
 
                     {/* Precio (con edición rápida inline) */}

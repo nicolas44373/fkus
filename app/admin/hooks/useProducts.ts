@@ -13,8 +13,8 @@ export type ProductPayload = {
   unit?: string
   category_id: string
   marca?: string | null
-  in_stock?: boolean
-  image_url?: string | null
+  stock_quantity?: number
+  image_urls?: string[]
 }
 
 export type Product = {
@@ -27,8 +27,8 @@ export type Product = {
   unit: string | null
   category_id: number
   marca: string | null
-  in_stock: boolean
-  image_url?: string | null
+  stock_quantity: number
+  image_urls: string[]
   category_name: string
 }
 
@@ -63,7 +63,7 @@ export function useProducts() {
       const [{ data: pData, error: pErr }, { data: cData, error: cErr }] = await Promise.all([
         supabase
           .from('products')
-          .select('id, name, price, compare_at_price, sizes, colors, unit, category_id, marca, in_stock, image_url, categories(name)')
+          .select('id, name, price, compare_at_price, sizes, colors, unit, category_id, marca, stock_quantity, image_urls, categories(name)')
           .order('name'),
         supabase.from('categories').select('id, name, image_url').order('name')
       ])
@@ -74,7 +74,7 @@ export function useProducts() {
           const [{ data: fallbackP, error: fallbackPErr }, { data: fallbackC, error: fallbackCErr }] = await Promise.all([
             supabase
               .from('products')
-              .select('id, name, price, unit, category_id, marca, in_stock, image_url, categories(name)')
+              .select('id, name, price, unit, category_id, marca, stock_quantity, image_urls, categories(name)')
               .order('name'),
             supabase.from('categories').select('id, name, image_url').order('name')
           ])
@@ -101,8 +101,8 @@ export function useProducts() {
             unit: p.unit,
             category_id: p.category_id,
             marca: p.marca,
-            in_stock: p.in_stock !== false, // default to true if null
-            image_url: p.image_url || '',
+            stock_quantity: p.stock_quantity ?? 0,
+            image_urls: p.image_urls || [],
             category_name: p.categories?.name || ''
           }))
         )
@@ -131,8 +131,8 @@ export function useProducts() {
         unit: payload.unit || null,
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
-        in_stock: payload.in_stock !== false,
-        image_url: payload.image_url || null
+        stock_quantity: Number(payload.stock_quantity) || 0,
+        image_urls: payload.image_urls || []
       }
 
       const { error } = await supabase.from('products').insert([insertData])
@@ -159,8 +159,8 @@ export function useProducts() {
         unit: payload.unit || null,
         category_id: Number(payload.category_id),
         marca: payload.marca || null,
-        in_stock: payload.in_stock !== false,
-        image_url: payload.image_url || null
+        stock_quantity: Number(payload.stock_quantity) || 0,
+        image_urls: payload.image_urls || []
       }
 
       const { error } = await supabase
@@ -178,20 +178,21 @@ export function useProducts() {
     }
   }
 
-  const toggleStock = async (id: number | string, currentStock: boolean) => {
+  const updateStock = async (id: number | string, quantity: number) => {
     try {
+      const safeQty = Math.max(0, Number(quantity) || 0)
       const { error } = await supabase
         .from('products')
-        .update({ in_stock: !currentStock })
+        .update({ stock_quantity: safeQty })
         .eq('id', id)
       if (error) throw error
 
       setProducts(prev =>
-        prev.map(p => (p.id === id ? { ...p, in_stock: !currentStock } : p))
+        prev.map(p => (p.id === id ? { ...p, stock_quantity: safeQty } : p))
       )
       return { success: true }
     } catch (error: any) {
-      console.error('Error toggling stock:', error)
+      console.error('Error updating stock:', error)
       return { success: false, error: error.message || 'Error al cambiar stock' }
     }
   }
@@ -374,7 +375,7 @@ export function useProducts() {
     submitting,
     addProduct,
     updateProduct,
-    toggleStock,
+    updateStock,
     bulkUpdatePrices,
     deleteProduct,
     updateCategory,

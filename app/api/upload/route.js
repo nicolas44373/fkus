@@ -27,7 +27,8 @@ export async function POST(request) {
       .from('fkus-images')
       .upload(fileName, buffer, {
         contentType: file.type,
-        upsert: true
+        upsert: true,
+        cacheControl: '31536000'
       })
 
     if (error) {

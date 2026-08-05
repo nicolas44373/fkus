@@ -18,7 +18,7 @@ import { Trophy, Check, X, Search, Edit2, Loader2, ArrowUpRight, Percent, Trash2
 type Toast = { message: string; type: 'success' | 'error' } | null
 type ConfirmDel = { id: number | string; name: string } | null
 
-const emptyForm = { name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', image_url: '' }
+const emptyForm = { name: '', price: '', compare_at_price: '', sizes: '', colors: '', unit: '', category_id: '', marca: '', stock_quantity: 0, image_urls: [] as string[] }
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'members' | 'categories'>('products')
@@ -45,7 +45,7 @@ export default function AdminPage() {
   const [presetParentName, setPresetParentName] = useState('')
   const [confirmDelCategory, setConfirmDelCategory] = useState<{ id: number | string; name: string } | null>(null)
 
-  const { products, categories, loading, submitting, addProduct, updateProduct, toggleStock, bulkUpdatePrices, deleteProduct, updateCategory, addCategory, deleteCategory, seedFkusCategories } = useProducts()
+  const { products, categories, loading, submitting, addProduct, updateProduct, updateStock, bulkUpdatePrices, deleteProduct, updateCategory, addCategory, deleteCategory, seedFkusCategories } = useProducts()
   const { 
     selectedCategory, 
     setSelectedCategory, 
@@ -89,8 +89,8 @@ export default function AdminPage() {
     setSelectedProductIds([])
   }, [selectedCategory, searchTerm])
 
-  const handleToggleStock = async (id: number, currentStock: boolean) => {
-    const res = await toggleStock(id, currentStock)
+  const handleUpdateStock = async (id: number, quantity: number) => {
+    const res = await updateStock(id, quantity)
     if (res.success) notify('Stock del producto actualizado', 'success')
     else notify(`Error: ${res.error}`, 'error')
   }
@@ -104,7 +104,7 @@ export default function AdminPage() {
       unit: product.unit || undefined,
       category_id: String(product.category_id),
       marca: product.marca || undefined,
-      in_stock: product.in_stock
+      stock_quantity: product.stock_quantity
     }
     const res = await updateProduct(id, payload)
     if (res.success) notify('Precio actualizado', 'success')
@@ -283,8 +283,8 @@ export default function AdminPage() {
       unit: product.unit || '',
       category_id: product.category_id ? String(product.category_id) : '',
       marca: product.marca || '',
-      in_stock: product.in_stock,
-      image_url: product.image_url || '',
+      stock_quantity: product.stock_quantity ?? 0,
+      image_urls: product.image_urls || [],
     })
     setShowAddForm(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -582,7 +582,7 @@ export default function AdminPage() {
               onToggleSort={toggleSort}
               onEdit={handleEdit}
               onDelete={handleDeleteRequest}
-              onToggleStock={handleToggleStock}
+              onUpdateStock={handleUpdateStock}
               onUpdatePriceInline={handleUpdatePriceInline}
               submitting={submitting}
               editingId={editingProduct}
