@@ -45,6 +45,12 @@ export default function Header() {
     }
   }, [isMenuOpen, activeCategoryId, categories])
 
+  const goHome = () => {
+    router.push('/')
+    setHeaderSearch('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const handleSearchSubmit = (e) => {
     e.preventDefault()
     if (headerSearch.trim()) {
@@ -126,10 +132,7 @@ export default function Header() {
 
           {/* Logo (Izquierda, con presencia propia) */}
           <span
-            onClick={() => {
-              router.push('/')
-              setHeaderSearch('')
-            }}
+            onClick={goHome}
             className="font-sans text-xl sm:text-2xl font-black tracking-[0.3em] text-bone select-none cursor-pointer hover:text-gold-400 transition-colors shrink-0"
           >
             FKUS
@@ -138,10 +141,7 @@ export default function Header() {
           {/* Nav Central (Desktop) */}
           <nav className="hidden md:flex items-center gap-9 text-[11px] font-bold uppercase tracking-[0.2em] text-smoke select-none">
             <button
-              onClick={() => {
-                router.push('/')
-                setHeaderSearch('')
-              }}
+              onClick={goHome}
               className="hover:text-bone transition-colors cursor-pointer"
             >
               Inicio
@@ -278,7 +278,12 @@ export default function Header() {
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-hairline pb-4 shrink-0">
-                <span className="font-sans text-xl font-black tracking-[0.3em] text-bone select-none">FKUS</span>
+                <span
+                  onClick={() => { goHome(); setIsMenuOpen(false) }}
+                  className="font-sans text-xl font-black tracking-[0.3em] text-bone select-none cursor-pointer hover:text-gold-400 transition-colors"
+                >
+                  FKUS
+                </span>
                 <button
                   onClick={() => setIsMenuOpen(false)}
                   className="p-1.5 rounded-lg text-smoke hover:text-bone hover:bg-surface-raised transition-all cursor-pointer"
@@ -294,7 +299,7 @@ export default function Header() {
                 </h3>
                 <button
                   onClick={() => {
-                    router.push('/')
+                    goHome()
                     setIsMenuOpen(false)
                   }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-left transition-colors ${

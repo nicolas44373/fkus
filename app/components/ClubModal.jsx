@@ -187,19 +187,19 @@ export default function ClubModal() {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="relative bg-gray-50 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative bg-surface-raised rounded-3xl shadow-2xl max-w-md w-full overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header del Modal */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 bg-surface border-b border-hairline shrink-0">
           <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-amber-500" />
-            <h3 className="font-extrabold text-gray-900 text-base">
+            <Trophy className="h-5 w-5 text-gold-500" />
+            <h3 className="font-extrabold text-bone text-base">
               {user ? 'Mi Perfil Club FKUS' : 'Club FKUS'}
             </h3>
           </div>
           <button
             onClick={() => setIsModalOpen(false)}
-            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+            className="p-2 text-smoke hover:text-bone hover:bg-surface-raised rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -208,13 +208,13 @@ export default function ClubModal() {
         {/* Cuerpo con scroll */}
         <div ref={modalBodyRef} className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {formError && (
-            <div className="bg-red-50 border border-red-100 text-red-700 text-xs font-semibold p-3.5 rounded-xl leading-relaxed">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold p-3.5 rounded-xl leading-relaxed">
               ⚠️ {formError}
             </div>
           )}
 
           {saveSuccess && (
-            <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-bold p-3.5 rounded-xl flex items-center gap-1.5 animate-in fade-in">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold p-3.5 rounded-xl flex items-center gap-1.5 animate-in fade-in">
               <Check className="h-4 w-4 shrink-0 stroke-[3]" />
               ¡Datos de envío actualizados en tu cuenta Club FKUS!
             </div>
@@ -233,43 +233,43 @@ export default function ClubModal() {
                 transition={{ duration: 0.15 }}
               >
                 <div className="text-center py-2">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mx-auto mb-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gold-500/10 flex items-center justify-center text-gold-400 mx-auto mb-3">
                     <LockKeyhole className="h-6 w-6" />
                   </div>
-                  <h4 className="font-extrabold text-gray-800 text-lg">Iniciá sesión en el Club</h4>
-                  <p className="text-xs text-gray-400 mt-1 max-w-xs mx-auto">
+                  <h4 className="font-extrabold text-bone text-lg">Iniciá sesión en el Club</h4>
+                  <p className="text-xs text-smoke mt-1 max-w-xs mx-auto">
                     Accedé a tus beneficios y autocompletá tus direcciones de entrega.
                   </p>
                 </div>
 
                 <div className="space-y-3.5">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Número de DNI</label>
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Número de DNI</label>
                     <div className="relative">
                       <input 
                         type="number"
                         value={dni}
                         onChange={e => setDni(e.target.value)}
                         placeholder="Ingresá tu DNI"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                         <FileText className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Contraseña</label>
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Contraseña</label>
                     <div className="relative">
                       <input 
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         placeholder="Contraseña elegida"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
@@ -278,18 +278,18 @@ export default function ClubModal() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-98"
+                    className="w-full bg-gold-500 hover:bg-gold-400 text-black font-extrabold py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-98"
                   >
                     {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Ingresar al Club'}
                   </button>
 
-                  <div className="text-center pt-2 border-t border-gray-100">
-                    <p className="text-xs text-gray-500">
+                  <div className="text-center pt-2 border-t border-hairline">
+                    <p className="text-xs text-smoke">
                       ¿Aún no tenés cuenta?{' '}
                       <button 
                         type="button"
                         onClick={() => setModalTab('register')}
-                        className="text-amber-600 font-extrabold hover:underline"
+                        className="text-gold-400 font-extrabold hover:underline"
                       >
                         Creá tu cuenta FKUS
                       </button>
@@ -310,10 +310,10 @@ export default function ClubModal() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
               >
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 p-4 rounded-2xl shadow-sm text-center">
-                  <Gift className="h-6 w-6 text-amber-500 mx-auto mb-1 animate-bounce" />
-                  <h4 className="font-extrabold text-amber-900 text-sm">🎁 ¡Regalo de Bienvenida!</h4>
-                  <p className="text-[11px] text-amber-700 mt-0.5 leading-relaxed">
+                <div className="bg-gradient-to-r from-surface-raised to-surface-raised border border-hairline p-4 rounded-2xl shadow-sm text-center">
+                  <Gift className="h-6 w-6 text-gold-500 mx-auto mb-1 animate-bounce" />
+                  <h4 className="font-extrabold text-gold-300 text-sm">🎁 ¡Regalo de Bienvenida!</h4>
+                  <p className="text-[11px] text-gold-400 mt-0.5 leading-relaxed">
                     Registrá tu cuenta FKUS hoy y sumá **100 puntos gratis** para canjear en tus próximas compras.
                   </p>
                 </div>
@@ -321,86 +321,86 @@ export default function ClubModal() {
                 <div className="space-y-3.5">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Nombre</label>
+                      <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Nombre</label>
                       <input 
                         type="text"
                         value={nombre}
                         onChange={e => setNombre(e.target.value)}
                         placeholder="Ej: Juan"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Apellido</label>
+                      <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Apellido</label>
                       <input 
                         type="text"
                         value={apellido}
                         onChange={e => setApellido(e.target.value)}
                         placeholder="Ej: Pérez"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Número de DNI</label>
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Número de DNI</label>
                     <div className="relative">
                       <input 
                         type="number"
                         value={dni}
                         onChange={e => setDni(e.target.value)}
                         placeholder="Sin puntos ni espacios"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                         <FileText className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Celular de contacto</label>
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Celular de contacto</label>
                     <div className="relative">
                       <input 
                         type="tel"
                         value={celular}
                         onChange={e => setCelular(e.target.value)}
                         placeholder="Ej: 3811234567"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                         <Phone className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Correo Electrónico (Gmail)</label>
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Correo Electrónico (Gmail)</label>
                     <div className="relative">
                       <input 
                         type="email"
                         value={gmail}
                         onChange={e => setGmail(e.target.value)}
                         placeholder="Ej: juan.perez@gmail.com"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                         <Mail className="h-4 w-4" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">Contraseña elegida</label>
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">Contraseña elegida</label>
                     <div className="relative">
                       <input 
                         type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         placeholder="Elegí tu contraseña de acceso"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface"
                       />
-                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                         <Lock className="h-4 w-4" />
                       </div>
                     </div>
@@ -409,18 +409,18 @@ export default function ClubModal() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-98"
+                    className="w-full bg-gold-500 hover:bg-gold-400 text-black font-black py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 active:scale-98"
                   >
                     {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Registrarme y Ganar 100 Puntos'}
                   </button>
 
-                  <div className="text-center pt-2 border-t border-gray-100">
-                    <p className="text-xs text-gray-500">
+                  <div className="text-center pt-2 border-t border-hairline">
+                    <p className="text-xs text-smoke">
                       ¿Ya tenés una cuenta?{' '}
                       <button 
                         type="button"
                         onClick={() => setModalTab('login')}
-                        className="text-amber-600 font-extrabold hover:underline"
+                        className="text-gold-400 font-extrabold hover:underline"
                       >
                         Iniciá sesión
                       </button>
@@ -443,12 +443,12 @@ export default function ClubModal() {
                 {/* Membresía FKUS Digital */}
                 <div className="relative bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-3xl p-5 text-white shadow-xl overflow-hidden border border-zinc-800">
                   {/* Círculos decorativos de fondo */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -translate-y-6 translate-x-6"></div>
-                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-amber-500/10 rounded-full blur-xl"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 rounded-full blur-2xl -translate-y-6 translate-x-6"></div>
+                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-gold-500/10 rounded-full blur-xl"></div>
 
                   <div className="relative flex justify-between items-start">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-widest bg-amber-500 text-black px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-gold-500 text-black px-2 py-0.5 rounded-full">
                         Socio Club FKUS
                       </span>
                       <h4 className="font-extrabold text-xl mt-3 tracking-tight text-white">
@@ -457,7 +457,7 @@ export default function ClubModal() {
                       <p className="text-[11px] text-zinc-400 font-medium mt-1">DNI: {user.dni}</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 border border-white/10 flex flex-col items-center shadow-inner">
-                      <Star className="h-6 w-6 text-amber-400 fill-amber-400 animate-pulse" />
+                      <Star className="h-6 w-6 text-gold-400 fill-gold-400 animate-pulse" />
                     </div>
                   </div>
 
@@ -470,8 +470,8 @@ export default function ClubModal() {
                     </div>
                     <div className="text-right">
                       <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider leading-none">Mis Puntos</p>
-                      <p className="text-2xl font-black tracking-tight mt-1 flex items-center justify-end gap-1.5 text-amber-400">
-                        <Trophy className="h-5 w-5 text-amber-400 shrink-0" />
+                      <p className="text-2xl font-black tracking-tight mt-1 flex items-center justify-end gap-1.5 text-gold-400">
+                        <Trophy className="h-5 w-5 text-gold-400 shrink-0" />
                         {user.points} <span className="text-xs font-bold text-white/90">pts</span>
                       </p>
                     </div>
@@ -479,17 +479,17 @@ export default function ClubModal() {
                 </div>
 
                 {/* Explicativo del club */}
-                <div className="bg-amber-50 border border-amber-100 rounded-2xl p-3.5 text-center">
-                  <p className="text-[11px] text-amber-800 font-semibold leading-relaxed">
-                    🌟 <span className="font-extrabold">Beneficio:</span> Con tu código <span className="font-black text-amber-900">#{user.club_code}</span> sumás **1 punto cada $10.000** en todas tus compras confirmadas y accedés a regalos del Club.
+                <div className="bg-surface-raised border border-hairline rounded-2xl p-3.5 text-center">
+                  <p className="text-[11px] text-gold-300 font-semibold leading-relaxed">
+                    🌟 <span className="font-extrabold">Beneficio:</span> Con tu código <span className="font-black text-gold-300">#{user.club_code}</span> sumás **1 punto cada $10.000** en todas tus compras confirmadas y accedés a regalos del Club.
                   </p>
                 </div>
 
                 {/* Formulario Dirección de Envío */}
-                <form onSubmit={handleSaveProfile} className="space-y-4 pt-1 border-t border-gray-100">
+                <form onSubmit={handleSaveProfile} className="space-y-4 pt-1 border-t border-hairline">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="h-4 w-4 text-amber-500" />
-                    <h5 className="font-extrabold text-gray-800 text-sm">Dirección de entrega predeterminada</h5>
+                    <MapPin className="h-4 w-4 text-gold-500" />
+                    <h5 className="font-extrabold text-bone text-sm">Dirección de entrega predeterminada</h5>
                   </div>
 
                   <MapInput
@@ -505,7 +505,7 @@ export default function ClubModal() {
 
                   {/* Referencias */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">
                       Referencias (piso, dpto, indicaciones)
                     </label>
                     <input
@@ -513,7 +513,7 @@ export default function ClubModal() {
                       value={referencia}
                       onChange={e => setReferencia(e.target.value)}
                       placeholder="Ej: Portón azul, timbre 3A"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white shadow-sm"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-hairline text-sm text-bone placeholder-smoke focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface shadow-sm"
                     />
                   </div>
 
@@ -521,14 +521,14 @@ export default function ClubModal() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-3 rounded-xl shadow-sm hover:shadow transition-all text-xs disabled:opacity-50 active:scale-98"
+                      className="flex-1 bg-gold-500 hover:bg-gold-400 text-black font-extrabold py-3 rounded-xl shadow-sm hover:shadow transition-all text-xs disabled:opacity-50 active:scale-98"
                     >
                       {submitting ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : 'Guardar Datos de Entrega'}
                     </button>
                     <button
                       type="button"
                       onClick={logout}
-                      className="px-4 py-3 rounded-xl border border-gray-200 text-red-500 hover:bg-red-50 transition-colors flex items-center justify-center font-bold text-xs"
+                      className="px-4 py-3 rounded-xl border border-hairline text-red-400 hover:bg-red-500/10 transition-colors flex items-center justify-center font-bold text-xs"
                       title="Cerrar Sesión"
                     >
                       <LogOut className="h-4.5 w-4.5" />
@@ -547,13 +547,13 @@ export default function ClubModal() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-white/95 z-50 flex flex-col items-center justify-center text-center p-6"
+              className="absolute inset-0 bg-surface/95 z-50 flex flex-col items-center justify-center text-center p-6"
             >
-              <div className="w-16 h-16 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-4 shadow-md">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 shadow-md">
                 <Check className="h-8 w-8 stroke-[3] animate-bounce" />
               </div>
-              <h4 className="text-xl font-black text-gray-900">¡Datos Actualizados!</h4>
-              <p className="text-xs text-gray-500 mt-2 max-w-xs leading-relaxed">
+              <h4 className="text-xl font-black text-bone">¡Datos Actualizados!</h4>
+              <p className="text-xs text-smoke mt-2 max-w-xs leading-relaxed">
                 Tu dirección y pin de entrega se guardaron con éxito en tu cuenta de Club FKUS.
               </p>
             </motion.div>
