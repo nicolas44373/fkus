@@ -255,7 +255,7 @@ export default function CartDrawer() {
   }
 
   const handleFinalizeWhatsApp = () => {
-    window.open(`https://wa.me/+5493854021865?text=${encodeURIComponent(whatsappMessage)}`, '_blank')
+    window.open(`https://wa.me/+5493813504756?text=${encodeURIComponent(whatsappMessage)}`, '_blank')
     clearCart()
     setIsOpen(false)
   }
@@ -291,30 +291,35 @@ export default function CartDrawer() {
         }`}
       />
 
-      {/* Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-full sm:w-[480px] bg-gray-50 shadow-2xl z-50 flex flex-col overflow-hidden transition-transform duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0' : 'translate-x-full'
+      {/* Drawer: bottom sheet en mobile, panel lateral en desktop */}
+      <div className={`fixed inset-x-0 bottom-0 sm:inset-x-auto sm:top-0 sm:right-0 sm:bottom-auto h-[92vh] sm:h-full w-full sm:w-[480px] bg-surface-raised shadow-2xl z-50 flex flex-col overflow-hidden rounded-t-3xl sm:rounded-none transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-y-0 translate-x-0' : 'translate-y-full sm:translate-y-0 translate-x-0 sm:translate-x-full'
       }`}>
-        
+
+        {/* Handle de arrastre (solo mobile) */}
+        <div className="sm:hidden flex items-center justify-center pt-2.5 pb-1 shrink-0" onClick={() => setIsOpen(false)}>
+          <div className="w-10 h-1 rounded-full bg-hairline" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-gray-100 shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 bg-surface border-b border-hairline shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-md">
+            <div className="w-9 h-9 rounded-xl bg-gold-500 flex items-center justify-center text-black shadow-md">
               <ShoppingCart className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-extrabold text-gray-900 text-base leading-none">Mi Pedido</h2>
-              <p className="text-[10px] text-gray-400 font-medium mt-1 font-semibold">Club Alenort Integrado</p>
+              <h2 className="font-extrabold text-bone text-base leading-none">Mi Pedido</h2>
+              <p className="text-[10px] text-smoke font-medium mt-1 font-semibold">Club FKUS Integrado</p>
             </div>
             {count > 0 && (
-              <span className="bg-amber-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full shadow-sm ml-1">
+              <span className="bg-gold-500 text-black text-xs font-black px-2.5 py-0.5 rounded-full shadow-sm ml-1">
                 {count}
               </span>
             )}
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+            className="p-2 text-smoke hover:text-bone hover:bg-surface-raised rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -322,29 +327,29 @@ export default function CartDrawer() {
 
         {/* Stepper Indicator */}
         {items.length > 0 && step <= 3 && (
-          <div className="bg-white border-b border-gray-100 px-5 py-4 shrink-0 flex flex-col items-center gap-3">
+          <div className="bg-surface border-b border-hairline px-5 py-4 shrink-0 flex flex-col items-center gap-3">
             {/* Circles Row */}
             <div className="flex items-center justify-center w-full max-w-[240px]">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs shadow-sm transition-all shrink-0 ${
-                step >= 1 ? 'bg-amber-500 text-white ring-4 ring-amber-100' : 'bg-gray-100 text-gray-400'
+                step >= 1 ? 'bg-gold-500 text-black ring-4 ring-gold-500/20' : 'bg-surface-raised text-smoke'
               }`}>
                 {step > 1 ? <Check className="h-4 w-4" /> : '1'}
               </div>
-              <div className={`flex-1 h-1 transition-colors mx-1 ${step >= 2 ? 'bg-amber-500' : 'bg-gray-100'}`} />
+              <div className={`flex-1 h-1 transition-colors mx-1 ${step >= 2 ? 'bg-gold-500' : 'bg-surface-raised'}`} />
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs shadow-sm transition-all shrink-0 ${
-                step >= 2 ? 'bg-amber-500 text-white ring-4 ring-amber-100' : 'bg-gray-100 text-gray-400'
+                step >= 2 ? 'bg-gold-500 text-black ring-4 ring-gold-500/20' : 'bg-surface-raised text-smoke'
               }`}>
                 {step > 2 ? <Check className="h-4 w-4" /> : '2'}
               </div>
-              <div className={`flex-1 h-1 transition-colors mx-1 ${step >= 3 ? 'bg-amber-500' : 'bg-gray-100'}`} />
+              <div className={`flex-1 h-1 transition-colors mx-1 ${step >= 3 ? 'bg-gold-500' : 'bg-surface-raised'}`} />
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs shadow-sm transition-all shrink-0 ${
-                step >= 3 ? 'bg-amber-500 text-white ring-4 ring-amber-100' : 'bg-gray-100 text-gray-400'
+                step >= 3 ? 'bg-gold-500 text-black ring-4 ring-gold-500/20' : 'bg-surface-raised text-smoke'
               }`}>
                 3
               </div>
             </div>
             {/* Active Step Label */}
-            <span className="text-xs font-black text-gray-800 uppercase tracking-widest leading-none mt-0.5">
+            <span className="text-xs font-black text-bone uppercase tracking-widest leading-none mt-0.5">
               {step === 1 && '1. Resumen de tu pedido'}
               {step === 2 && '2. Datos de envío y mapa'}
               {step === 3 && '3. Confirmar pedido'}
@@ -355,16 +360,16 @@ export default function CartDrawer() {
         {/* Content */}
         {items.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-            <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 mb-6 border border-amber-100">
+            <div className="w-20 h-20 rounded-full bg-surface-raised flex items-center justify-center text-gold-500 mb-6 border border-hairline">
               <ShoppingCart className="h-10 w-10 animate-bounce" />
             </div>
-            <p className="font-extrabold text-gray-800 text-lg mb-1.5">Tu pedido está vacío</p>
-            <p className="text-gray-400 text-sm max-w-xs mb-8 leading-relaxed">
-              Explorá el catálogo de Alenort y agrega productos para comenzar tu pedido mayorista.
+            <p className="font-extrabold text-bone text-lg mb-1.5">Tu pedido está vacío</p>
+            <p className="text-smoke text-sm max-w-xs mb-8 leading-relaxed">
+              Explorá el catálogo de FKUS y agrega productos para armar tu pedido.
             </p>
             <button
               onClick={() => setIsOpen(false)}
-              className="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold rounded-2xl transition-all text-sm shadow-md hover:shadow-lg active:scale-95"
+              className="px-6 py-3.5 bg-gold-500 hover:bg-gold-400 text-black font-extrabold rounded-2xl transition-all text-sm shadow-md hover:shadow-lg active:scale-95"
             >
               Explorar Catálogo →
             </button>
@@ -383,10 +388,10 @@ export default function CartDrawer() {
                     className="space-y-4"
                   >
                     <div className="flex items-center justify-between px-1">
-                      <span className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Productos seleccionados</span>
+                      <span className="text-xs font-extrabold text-smoke uppercase tracking-widest">Productos seleccionados</span>
                       <button 
                         onClick={clearCart}
-                        className="text-xs font-bold text-red-500 hover:text-red-700 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-100/50 cursor-pointer shadow-sm"
+                        className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/15 border border-red-500/20 cursor-pointer shadow-sm"
                       >
                         <Trash2 className="h-3.5 w-3.5" /> Limpiar
                       </button>
@@ -397,11 +402,11 @@ export default function CartDrawer() {
                         const subtotal = parseFloat(item.price || 0) * item.quantity
                         const itemKey = item.cartItemId || String(item.id)
                         return (
-                          <div key={itemKey} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col gap-3">
+                          <div key={itemKey} className="bg-surface rounded-2xl p-4 border border-hairline shadow-sm flex flex-col gap-3">
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex gap-3 min-w-0 flex-1">
                                 {/* Thumbnail */}
-                                <div className="w-12 h-16 bg-zinc-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 flex items-center justify-center">
+                                <div className="w-12 h-16 bg-surface-raised rounded-lg overflow-hidden shrink-0 border border-hairline flex items-center justify-center">
                                   {item.image_url ? (
                                     <img src={item.image_url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                   ) : (
@@ -409,24 +414,24 @@ export default function CartDrawer() {
                                   )}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <p className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">{item.name}</p>
+                                  <p className="font-bold text-bone text-sm leading-snug line-clamp-2">{item.name}</p>
                                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                                     {item.categoryName && (
-                                      <span className="text-[9px] font-black uppercase bg-zinc-100 text-zinc-650 border border-zinc-200 px-1.5 py-0.5 rounded">
+                                      <span className="text-[9px] font-black uppercase bg-surface-raised text-smoke border border-hairline px-1.5 py-0.5 rounded">
                                         {item.categoryName}
                                       </span>
                                     )}
                                     {item.selectedColor && (
-                                      <span className="text-[9px] font-black uppercase bg-zinc-900 text-zinc-200 border border-zinc-800 px-1.5 py-0.5 rounded">
+                                      <span className="text-[9px] font-black uppercase bg-surface-raised text-smoke border border-hairline px-1.5 py-0.5 rounded">
                                         {item.selectedColor}
                                       </span>
                                     )}
                                     {item.selectedSize && (
-                                      <span className="text-[9px] font-black uppercase bg-zinc-900 text-zinc-200 border border-zinc-800 px-1.5 py-0.5 rounded">
+                                      <span className="text-[9px] font-black uppercase bg-surface-raised text-smoke border border-hairline px-1.5 py-0.5 rounded">
                                         {item.selectedSize}
                                       </span>
                                     )}
-                                    <span className="text-xs font-semibold text-gray-400">
+                                    <span className="text-xs font-semibold text-smoke">
                                       {fmt(item.price)} c/u
                                     </span>
                                   </div>
@@ -434,31 +439,31 @@ export default function CartDrawer() {
                               </div>
                               <button
                                 onClick={() => removeItem(itemKey)}
-                                className="shrink-0 p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all animate-none"
+                                className="shrink-0 p-1.5 text-smoke hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all animate-none"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
 
-                            <div className="flex items-center justify-between border-t border-gray-50 pt-3">
+                            <div className="flex items-center justify-between border-t border-hairline pt-3">
                               {/* Quantity Controls */}
-                              <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
+                              <div className="flex items-center gap-1 bg-surface-raised rounded-xl p-1 border border-hairline">
                                 <button
                                   onClick={() => updateQty(itemKey, item.quantity - 1)}
-                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-white active:scale-90 transition-all font-bold text-sm"
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-smoke hover:bg-surface active:scale-90 transition-all font-bold text-sm"
                                 >
                                   <Minus className="h-3.5 w-3.5" />
                                 </button>
-                                <span className="w-9 text-center font-extrabold text-gray-900 text-sm">{item.quantity}</span>
+                                <span className="w-9 text-center font-extrabold text-bone text-sm">{item.quantity}</span>
                                 <button
                                   onClick={() => updateQty(itemKey, item.quantity + 1)}
-                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:bg-white active:scale-90 transition-all font-bold text-sm"
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-smoke hover:bg-surface active:scale-90 transition-all font-bold text-sm"
                                 >
                                   <Plus className="h-3.5 w-3.5" />
                                 </button>
                               </div>
 
-                              <p className="font-black text-emerald-600 text-base">{fmt(subtotal.toString())}</p>
+                              <p className="font-black text-gold-400 text-base">{fmt(subtotal.toString())}</p>
                             </div>
                           </div>
                         )
@@ -476,28 +481,28 @@ export default function CartDrawer() {
                     transition={{ duration: 0.2 }}
                     className="space-y-5"
                   >
-                    {/* SECCIÓN CLUB ALENORT */}
+                    {/* SECCIÓN CLUB FKUS */}
                     {user ? (
                       /* Socio Logueado */
-                      <div className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
+                      <div className="bg-gradient-to-br from-zinc-900 via-black to-zinc-900 border border-hairline rounded-2xl p-4 text-white shadow-md flex items-center justify-between">
                         <div>
-                          <span className="text-[9px] font-black uppercase tracking-widest bg-black/30 border border-white/10 px-2 py-0.5 rounded-full">
-                            Socio Club Alenort
+                          <span className="text-[9px] font-black uppercase tracking-widest bg-gold-500 text-black px-2 py-0.5 rounded-full">
+                            Socio Club FKUS
                           </span>
-                          <h4 className="font-extrabold text-sm mt-2">{user.nombre} {user.apellido}</h4>
-                          <p className="text-[10px] text-emerald-100 font-bold mt-0.5">
+                          <h4 className="font-extrabold text-sm mt-2 text-bone">{user.nombre} {user.apellido}</h4>
+                          <p className="text-[10px] text-smoke font-bold mt-0.5">
                             Socio #{user.club_code} | Puntos: {user.points} pts
                           </p>
                         </div>
-                        <Trophy className="h-8 w-8 text-yellow-300 animate-pulse shrink-0" />
+                        <Trophy className="h-8 w-8 text-gold-400 animate-pulse shrink-0" />
                       </div>
                     ) : (
                       /* No Logueado: Promoción e Input Código */
-                      <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-2xl p-4 shadow-sm space-y-3">
-                        <p className="text-xs font-bold text-amber-800 uppercase tracking-wide flex items-center gap-1.5 leading-none">
-                          <Trophy className="h-4 w-4 text-amber-500 shrink-0" /> ¿Sos socio del Club Alenort?
+                      <div className="bg-gradient-to-br from-surface-raised to-surface-raised border border-hairline rounded-2xl p-4 shadow-sm space-y-3">
+                        <p className="text-xs font-bold text-gold-300 uppercase tracking-wide flex items-center gap-1.5 leading-none">
+                          <Trophy className="h-4 w-4 text-gold-500 shrink-0" /> ¿Sos socio del Club FKUS?
                         </p>
-                        <p className="text-[11px] text-amber-700 leading-relaxed">
+                        <p className="text-[11px] text-smoke leading-relaxed">
                           Iniciá sesión para sumar puntos o ingresá tu código de 4 dígitos para cargar tus datos de entrega anteriores.
                         </p>
                         
@@ -509,40 +514,40 @@ export default function CartDrawer() {
                             value={clubCodeInput}
                             onChange={e => { setClubCodeInput(e.target.value.replace(/\D/g, '')); setCodeSearchStatus(null) }}
                             placeholder="Tu código de 4 dígitos"
-                            className="flex-1 px-3.5 py-2.5 rounded-xl border border-amber-200 bg-white text-xs font-mono font-bold tracking-widest text-center text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all shadow-sm"
+                            className="flex-1 px-3.5 py-2.5 rounded-xl border border-hairline bg-surface text-xs font-mono font-bold tracking-widest text-center text-bone placeholder-smoke focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 transition-all shadow-sm"
                           />
                           <button
                             type="button"
                             onClick={handleCodeLookup}
                             disabled={codeSearchStatus === 'searching'}
-                            className="shrink-0 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs rounded-xl shadow-sm transition-colors flex items-center gap-1"
+                            className="shrink-0 px-4 py-2.5 bg-gold-500 hover:bg-gold-400 text-black font-extrabold text-xs rounded-xl shadow-sm transition-colors flex items-center gap-1"
                           >
                             {codeSearchStatus === 'searching' ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Cargar'}
                           </button>
                         </div>
 
                         {codeSearchStatus === 'found' && loadedFromCodeUser && (
-                          <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold animate-in fade-in">
+                          <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold animate-in fade-in">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             ¡Cargado! Socio #{loadedFromCodeUser.club_code} ({loadedFromCodeUser.nombre})
                           </div>
                         )}
                         {codeSearchStatus === 'not-found' && (
-                          <p className="text-red-600 text-[10px] font-bold">⚠️ Código no encontrado.</p>
+                          <p className="text-red-400 text-[10px] font-bold">⚠️ Código no encontrado.</p>
                         )}
 
-                        <div className="flex items-center justify-between pt-2.5 border-t border-amber-100/50 text-xs">
+                        <div className="flex items-center justify-between pt-2.5 border-t border-hairline text-xs">
                           <button
                             type="button"
                             onClick={() => openClubModal('login')}
-                            className="font-bold text-amber-700 hover:underline"
+                            className="font-bold text-gold-400 hover:underline"
                           >
                             Iniciá sesión con DNI
                           </button>
                           <button
                             type="button"
                             onClick={() => openClubModal('register')}
-                            className="font-black text-amber-600 hover:underline"
+                            className="font-black text-gold-400 hover:underline"
                           >
                             Creá tu cuenta gratis
                           </button>
@@ -551,15 +556,15 @@ export default function CartDrawer() {
                     )}
 
                     {/* Formulario Datos Básicos */}
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4 shadow-sm">
-                      <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
-                        <User className="h-4 w-4 text-amber-500" />
-                        <p className="text-xs font-black uppercase tracking-wider text-gray-500">Datos personales</p>
+                    <div className="bg-surface rounded-2xl border border-hairline p-4 space-y-4 shadow-sm">
+                      <div className="flex items-center gap-2 pb-2 border-b border-hairline">
+                        <User className="h-4 w-4 text-gold-500" />
+                        <p className="text-xs font-black uppercase tracking-wider text-smoke">Datos personales</p>
                       </div>
 
                       {/* Nombre */}
                       <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">
                           Nombre Completo <span className="text-red-400">*</span>
                         </label>
                         <div className="relative">
@@ -568,22 +573,22 @@ export default function CartDrawer() {
                             value={customer.nombre}
                             onChange={(e) => handleFieldChange('nombre', e.target.value)}
                             placeholder="Ej: Juan Pérez"
-                            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-bone placeholder-smoke focus:outline-none focus:ring-2 transition-all ${
                               errors.nombre 
-                                ? 'border-red-300 focus:ring-red-200 bg-red-50' 
-                                : 'border-gray-200 focus:ring-amber-400 focus:border-amber-400 bg-white'
+                                ? 'border-red-500/40 focus:ring-red-500/20 bg-red-500/10'
+                                : 'border-hairline focus:ring-gold-500 focus:border-gold-500 bg-surface'
                             }`}
                           />
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                             <User className="h-4 w-4" />
                           </div>
                         </div>
-                        {errors.nombre && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.nombre}</p>}
+                        {errors.nombre && <p className="text-red-400 text-xs mt-1 font-semibold">{errors.nombre}</p>}
                       </div>
 
                       {/* Celular */}
                       <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">
                           Celular de contacto <span className="text-red-400">*</span>
                         </label>
                         <div className="relative">
@@ -592,25 +597,25 @@ export default function CartDrawer() {
                             value={customer.celular}
                             onChange={(e) => handleFieldChange('celular', e.target.value)}
                             placeholder="Ej: 381 123-4567"
-                            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm text-bone placeholder-smoke focus:outline-none focus:ring-2 transition-all ${
                               errors.celular 
-                                ? 'border-red-300 focus:ring-red-200 bg-red-50' 
-                                : 'border-gray-200 focus:ring-amber-400 focus:border-amber-400 bg-white'
+                                ? 'border-red-500/40 focus:ring-red-500/20 bg-red-500/10'
+                                : 'border-hairline focus:ring-gold-500 focus:border-gold-500 bg-surface'
                             }`}
                           />
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                             <Phone className="h-4 w-4" />
                           </div>
                         </div>
-                        {errors.celular && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.celular}</p>}
+                        {errors.celular && <p className="text-red-400 text-xs mt-1 font-semibold">{errors.celular}</p>}
                       </div>
                     </div>
 
                     {/* Componente del Mapa y Dirección */}
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-4 shadow-sm">
-                      <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
-                        <MapPin className="h-4 w-4 text-amber-500" />
-                        <p className="text-xs font-black uppercase tracking-wider text-gray-500">Ubicación de entrega</p>
+                    <div className="bg-surface rounded-2xl border border-hairline p-4 space-y-4 shadow-sm">
+                      <div className="flex items-center gap-2 pb-2 border-b border-hairline">
+                        <MapPin className="h-4 w-4 text-gold-500" />
+                        <p className="text-xs font-black uppercase tracking-wider text-smoke">Ubicación de entrega</p>
                       </div>
 
                       <MapInput
@@ -626,11 +631,11 @@ export default function CartDrawer() {
                           }
                         }}
                       />
-                      {errors.direccion && <p className="text-red-500 text-xs font-semibold">{errors.direccion}</p>}
+                      {errors.direccion && <p className="text-red-400 text-xs font-semibold">{errors.direccion}</p>}
 
                       {/* Referencia */}
                       <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                        <label className="block text-xs font-bold text-smoke uppercase tracking-wide mb-1.5">
                           Referencia de entrega (Opcional)
                         </label>
                         <div className="relative">
@@ -639,9 +644,9 @@ export default function CartDrawer() {
                             value={customer.referencia}
                             onChange={(e) => updateCustomer('referencia', e.target.value)}
                             placeholder="Ej: Portón verde, entre San Martín y Chacabuco"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 bg-white transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-hairline text-sm text-bone placeholder-smoke focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500 bg-surface transition-all"
                           />
-                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-smoke">
                             <FileText className="h-4 w-4" />
                           </div>
                         </div>
@@ -659,65 +664,65 @@ export default function CartDrawer() {
                     transition={{ duration: 0.2 }}
                     className="space-y-4"
                   >
-                    <p className="text-xs font-extrabold text-gray-400 uppercase tracking-widest">Resumen de Entrega</p>
+                    <p className="text-xs font-extrabold text-smoke uppercase tracking-widest">Resumen de Entrega</p>
                     
                     {/* Resumen datos envío */}
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3.5 shadow-sm">
+                    <div className="bg-surface rounded-2xl border border-hairline p-4 space-y-3.5 shadow-sm">
                       <div className="flex items-start gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500 shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-surface-raised border border-hairline flex items-center justify-center text-gold-500 shrink-0">
                           <User className="h-4.5 w-4.5" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wide leading-none mb-1">Destinatario</p>
-                          <p className="font-extrabold text-gray-800">{customer.nombre}</p>
-                          <p className="text-xs font-medium text-gray-500 mt-0.5">{customer.celular}</p>
+                          <p className="text-xs font-bold text-smoke uppercase tracking-wide leading-none mb-1">Destinatario</p>
+                          <p className="font-extrabold text-bone">{customer.nombre}</p>
+                          <p className="text-xs font-medium text-smoke mt-0.5">{customer.celular}</p>
                           {(user || loadedFromCodeUser) && (
-                            <span className="inline-block bg-emerald-50 text-emerald-700 text-[9px] font-black uppercase px-2 py-0.5 rounded-md mt-1.5 border border-emerald-100">
+                            <span className="inline-block bg-gold-500 text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-md mt-1.5">
                               ⭐ Socio Club FKUS: #{user?.club_code || loadedFromCodeUser?.club_code}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="w-full h-px bg-gray-50" />
+                      <div className="w-full h-px bg-surface-raised" />
 
                       <div className="flex items-start gap-3 text-sm">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-surface-raised border border-hairline flex items-center justify-center text-gold-500 shrink-0">
                           <MapPin className="h-4.5 w-4.5" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wide leading-none mb-1">Dirección Seleccionada</p>
-                          <p className="font-extrabold text-gray-800">{customer.direccion}</p>
+                          <p className="text-xs font-bold text-smoke uppercase tracking-wide leading-none mb-1">Dirección Seleccionada</p>
+                          <p className="font-extrabold text-bone">{customer.direccion}</p>
                           {customer.referencia.trim() && (
-                            <p className="text-xs font-medium text-gray-500 mt-1 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                              🏠 <span className="font-bold text-gray-600">Ref:</span> {customer.referencia}
+                            <p className="text-xs font-medium text-smoke mt-1 bg-surface-raised p-2 rounded-lg border border-hairline">
+                              🏠 <span className="font-bold text-smoke">Ref:</span> {customer.referencia}
                             </p>
                           )}
-                          <p className="text-[10px] text-amber-600 font-bold mt-1.5 flex items-center gap-1">
+                          <p className="text-[10px] text-gold-400 font-bold mt-1.5 flex items-center gap-1">
                             📍 Pin GPS asignado ({customer.lat.toFixed(5)}, {customer.lng.toFixed(5)})
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <p className="text-xs font-extrabold text-gray-400 uppercase tracking-widest mt-2">Productos ({count})</p>
+                    <p className="text-xs font-extrabold text-smoke uppercase tracking-widest mt-2">Productos ({count})</p>
 
                     {/* Resumen productos */}
-                    <div className="bg-white rounded-2xl border border-gray-100 p-4 divide-y divide-gray-50 shadow-sm max-h-56 overflow-y-auto">
+                    <div className="bg-surface rounded-2xl border border-hairline p-4 divide-y divide-hairline shadow-sm max-h-56 overflow-y-auto">
                       {items.map(item => (
                         <div key={item.cartItemId || String(item.id)} className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between text-xs gap-3">
                           <div className="min-w-0">
-                            <p className="font-bold text-gray-800 truncate">{item.name}</p>
-                            <p className="text-[10px] text-gray-400 mt-0.5">
+                            <p className="font-bold text-bone truncate">{item.name}</p>
+                            <p className="text-[10px] text-smoke mt-0.5">
                               {item.quantity} × {fmt(item.price)} {item.unit ? `(${item.unit})` : ''}
                               {(item.selectedSize || item.selectedColor) && (
-                                <span className="ml-1 font-bold text-gray-500">
+                                <span className="ml-1 font-bold text-smoke">
                                   [{[item.selectedColor, item.selectedSize].filter(Boolean).join(', ')}]
                                 </span>
                               )}
                             </p>
                           </div>
-                          <p className="font-extrabold text-gray-800 shrink-0">
+                          <p className="font-extrabold text-bone shrink-0">
                             {fmt((parseFloat(item.price || 0) * item.quantity).toString())}
                           </p>
                         </div>
@@ -725,8 +730,8 @@ export default function CartDrawer() {
                     </div>
 
                     {/* Disclaimer de puntos */}
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3.5">
-                      <p className="text-[11px] text-blue-800 font-medium leading-relaxed">
+                    <div className="bg-surface-raised border border-hairline rounded-xl p-3.5">
+                      <p className="text-[11px] text-smoke font-medium leading-relaxed">
                         {user || loadedFromCodeUser ? (
                           `🎁 ¡Sumás puntos! Al confirmar tu compra, se acreditarán ${Math.floor(total / 10000)} puntos en tu cuenta Club FKUS (1 punto cada $10.000).`
                         ) : (
@@ -746,25 +751,25 @@ export default function CartDrawer() {
                     transition={{ duration: 0.3 }}
                     className="flex flex-col items-center justify-center text-center py-10 px-2 space-y-6 animate-in fade-in zoom-in-95 duration-200"
                   >
-                    <div className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 animate-bounce">
+                    <div className="w-20 h-20 rounded-full bg-surface-raised border border-hairline flex items-center justify-center text-gold-500 animate-bounce">
                       <CheckCircle2 className="w-12 h-12" />
                     </div>
 
                     <div className="space-y-2">
-                      <h3 className="text-xl font-extrabold text-gray-900 animate-pulse">¡Pedido Registrado!</h3>
-                      <p className="text-sm text-gray-500 max-w-xs leading-relaxed mx-auto font-medium">
+                      <h3 className="text-xl font-extrabold text-bone animate-pulse">¡Pedido Registrado!</h3>
+                      <p className="text-sm text-smoke max-w-xs leading-relaxed mx-auto font-medium">
                         Tu compra ha sido cargada con éxito en nuestro sistema de reparto.
                       </p>
                     </div>
 
                     {generatedOrderId && (
-                      <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-black px-4 py-2 rounded-2xl font-mono shadow-sm">
+                      <div className="inline-flex items-center gap-1.5 bg-surface-raised border border-hairline text-gold-400 text-xs font-black px-4 py-2 rounded-2xl font-mono shadow-sm">
                         🆔 Pedido Nro: #{generatedOrderId}
                       </div>
                     )}
 
-                    <div className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm space-y-4 max-w-xs w-full">
-                      <p className="text-xs text-gray-500 leading-normal font-semibold">
+                    <div className="bg-surface border border-hairline rounded-3xl p-5 shadow-sm space-y-4 max-w-xs w-full">
+                      <p className="text-xs text-smoke leading-normal font-semibold">
                         Para coordinar el pago y la entrega, envía el detalle del pedido a nuestro WhatsApp haciendo clic abajo.
                       </p>
                       
@@ -783,7 +788,7 @@ export default function CartDrawer() {
                       <button
                         type="button"
                         onClick={handleCopyMessage}
-                        className="text-xs font-bold text-gray-500 hover:text-amber-500 transition-colors flex items-center justify-center gap-1 bg-gray-150 hover:bg-amber-50 border border-gray-200/60 py-2.5 rounded-xl cursor-pointer"
+                        className="text-xs font-bold text-smoke hover:text-gold-500 transition-colors flex items-center justify-center gap-1 bg-surface-raised hover:bg-surface-raised border border-hairline/60 py-2.5 rounded-xl cursor-pointer"
                       >
                         {copied ? '¡Copiado con éxito! ✓' : '📋 Copiar detalle del pedido'}
                       </button>
@@ -794,7 +799,7 @@ export default function CartDrawer() {
                           clearCart()
                           setIsOpen(false)
                         }}
-                        className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors py-2 cursor-pointer"
+                        className="text-xs font-bold text-smoke hover:text-bone transition-colors py-2 cursor-pointer"
                       >
                         Volver al Catálogo sin enviar
                       </button>
@@ -807,23 +812,23 @@ export default function CartDrawer() {
 
             {/* Footer con cálculo de importes y acciones */}
             {step <= 3 && (
-              <div className="border-t border-gray-100 bg-white px-5 py-4 space-y-3 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+              <div className="border-t border-hairline bg-surface px-5 py-4 space-y-3 shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
                 {/* Resumen Financiero */}
-                <div className="space-y-1.5 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-100 rounded-2xl p-4">
+                <div className="space-y-1.5 text-xs font-semibold text-smoke bg-surface-raised border border-hairline rounded-2xl p-4">
                   <div className="flex items-center justify-between">
                     <p>Subtotal de productos</p>
-                    <p className="text-gray-800 font-bold">{fmt(total.toString())}</p>
+                    <p className="text-bone font-bold">{fmt(total.toString())}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="flex items-center gap-1 text-emerald-600 font-bold">
+                    <p className="flex items-center gap-1 text-gold-400 font-bold">
                       <Truck className="h-3.5 w-3.5" /> Envío de entrega
                     </p>
-                    <p className="text-emerald-600 font-bold uppercase">Gratis</p>
+                    <p className="text-gold-400 font-bold uppercase">Gratis</p>
                   </div>
-                  <div className="h-px bg-gray-200/60 my-2" />
-                  <div className="flex items-center justify-between text-sm text-gray-900 font-black">
+                  <div className="h-px bg-hairline my-2" />
+                  <div className="flex items-center justify-between text-sm text-bone font-black">
                     <p>Total Estimado</p>
-                    <p className="text-lg text-emerald-700 tracking-tight font-extrabold">{fmt(total.toString())}</p>
+                    <p className="text-lg text-gold-400 tracking-tight font-extrabold">{fmt(total.toString())}</p>
                   </div>
                 </div>
 
@@ -834,7 +839,7 @@ export default function CartDrawer() {
                       type="button"
                       onClick={handlePrevStep}
                       disabled={submittingOrder}
-                      className="px-4 py-3.5 rounded-2xl border border-gray-200 hover:border-gray-300 text-gray-600 font-extrabold flex items-center justify-center transition-all bg-white hover:bg-gray-50 active:scale-95 shadow-sm disabled:opacity-50"
+                      className="px-4 py-3.5 rounded-2xl border border-hairline hover:border-zinc-500 text-smoke font-extrabold flex items-center justify-center transition-all bg-surface hover:bg-surface-raised active:scale-95 shadow-sm disabled:opacity-50"
                     >
                       <ArrowLeft className="h-5 w-5" />
                     </button>
@@ -844,7 +849,7 @@ export default function CartDrawer() {
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="flex-1 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-extrabold py-3.5 rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm active:scale-98 animate-none"
+                      className="flex-1 bg-gold-500 hover:bg-gold-400 active:bg-gold-600 text-black font-extrabold py-3.5 rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm active:scale-98 animate-none"
                     >
                       Continuar
                       <ArrowRight className="h-4 w-4" />
@@ -854,7 +859,7 @@ export default function CartDrawer() {
                       type="button"
                       onClick={confirmAndRegisterOrder}
                       disabled={submittingOrder}
-                      className="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-black py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2.5 text-base active:scale-[0.97] hover:scale-[1.01] disabled:opacity-50 cursor-pointer"
+                      className="flex-1 bg-gold-500 hover:bg-gold-400 text-black font-black py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2.5 text-base active:scale-[0.97] hover:scale-[1.01] disabled:opacity-50 cursor-pointer"
                     >
                       {submittingOrder ? (
                         <Loader2 className="h-5 w-5 animate-spin" />

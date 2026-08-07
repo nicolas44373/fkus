@@ -194,7 +194,7 @@ export default function ClubModal() {
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-amber-500" />
             <h3 className="font-extrabold text-gray-900 text-base">
-              {user ? 'Mi Perfil Club Alenort' : 'Club Alenort'}
+              {user ? 'Mi Perfil Club FKUS' : 'Club FKUS'}
             </h3>
           </div>
           <button
@@ -216,7 +216,7 @@ export default function ClubModal() {
           {saveSuccess && (
             <div className="bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-bold p-3.5 rounded-xl flex items-center gap-1.5 animate-in fade-in">
               <Check className="h-4 w-4 shrink-0 stroke-[3]" />
-              ¡Datos de envío actualizados en tu cuenta Club Alenort!
+              ¡Datos de envío actualizados en tu cuenta Club FKUS!
             </div>
           )}
 
@@ -291,7 +291,7 @@ export default function ClubModal() {
                         onClick={() => setModalTab('register')}
                         className="text-amber-600 font-extrabold hover:underline"
                       >
-                        Creá tu cuenta Alenort
+                        Creá tu cuenta FKUS
                       </button>
                     </p>
                   </div>
@@ -314,7 +314,7 @@ export default function ClubModal() {
                   <Gift className="h-6 w-6 text-amber-500 mx-auto mb-1 animate-bounce" />
                   <h4 className="font-extrabold text-amber-900 text-sm">🎁 ¡Regalo de Bienvenida!</h4>
                   <p className="text-[11px] text-amber-700 mt-0.5 leading-relaxed">
-                    Registrá tu cuenta Alenort hoy y sumá **100 puntos gratis** para canjear en tus próximas compras.
+                    Registrá tu cuenta FKUS hoy y sumá **100 puntos gratis** para canjear en tus próximas compras.
                   </p>
                 </div>
 
@@ -440,38 +440,38 @@ export default function ClubModal() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.15 }}
               >
-                {/* Membresía Alenort Digital */}
-                <div className="relative bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-5 text-white shadow-xl overflow-hidden">
+                {/* Membresía FKUS Digital */}
+                <div className="relative bg-gradient-to-br from-zinc-900 via-black to-zinc-900 rounded-3xl p-5 text-white shadow-xl overflow-hidden border border-zinc-800">
                   {/* Círculos decorativos de fondo */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-6 translate-x-6"></div>
-                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-black/10 rounded-full blur-xl"></div>
-                  
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -translate-y-6 translate-x-6"></div>
+                  <div className="absolute -bottom-10 -left-10 w-28 h-28 bg-amber-500/10 rounded-full blur-xl"></div>
+
                   <div className="relative flex justify-between items-start">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-widest bg-black/30 border border-white/20 px-2 py-0.5 rounded-full">
-                        Socio Club Alenort
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-amber-500 text-black px-2 py-0.5 rounded-full">
+                        Socio Club FKUS
                       </span>
-                      <h4 className="font-extrabold text-xl mt-3 tracking-tight">
+                      <h4 className="font-extrabold text-xl mt-3 tracking-tight text-white">
                         {user.nombre.toUpperCase()} {user.apellido.toUpperCase()}
                       </h4>
-                      <p className="text-[11px] text-white/80 font-medium mt-1">DNI: {user.dni}</p>
+                      <p className="text-[11px] text-zinc-400 font-medium mt-1">DNI: {user.dni}</p>
                     </div>
-                    <div className="bg-white/20 backdrop-blur-md rounded-2xl p-2.5 border border-white/20 flex flex-col items-center shadow-inner">
-                      <Star className="h-6 w-6 text-yellow-300 fill-yellow-300 animate-pulse" />
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 border border-white/10 flex flex-col items-center shadow-inner">
+                      <Star className="h-6 w-6 text-amber-400 fill-amber-400 animate-pulse" />
                     </div>
                   </div>
 
                   <div className="mt-7 flex items-end justify-between">
                     <div>
-                      <p className="text-[9px] text-white/75 font-bold uppercase tracking-wider leading-none">Código Único</p>
-                      <p className="text-2xl font-black tracking-widest font-mono mt-1 select-all bg-black/10 px-2 py-0.5 rounded-lg border border-white/10">
+                      <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider leading-none">Código Único</p>
+                      <p className="text-2xl font-black tracking-widest font-mono mt-1 select-all bg-white/10 text-white px-2 py-0.5 rounded-lg border border-white/10">
                         #{user.club_code}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[9px] text-white/75 font-bold uppercase tracking-wider leading-none">Mis Puntos</p>
-                      <p className="text-2xl font-black tracking-tight mt-1 flex items-center justify-end gap-1.5">
-                        <Trophy className="h-5 w-5 text-yellow-300 shrink-0" />
+                      <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider leading-none">Mis Puntos</p>
+                      <p className="text-2xl font-black tracking-tight mt-1 flex items-center justify-end gap-1.5 text-amber-400">
+                        <Trophy className="h-5 w-5 text-amber-400 shrink-0" />
                         {user.points} <span className="text-xs font-bold text-white/90">pts</span>
                       </p>
                     </div>
@@ -554,7 +554,7 @@ export default function ClubModal() {
               </div>
               <h4 className="text-xl font-black text-gray-900">¡Datos Actualizados!</h4>
               <p className="text-xs text-gray-500 mt-2 max-w-xs leading-relaxed">
-                Tu dirección y pin de entrega se guardaron con éxito en tu cuenta de Club Alenort.
+                Tu dirección y pin de entrega se guardaron con éxito en tu cuenta de Club FKUS.
               </p>
             </motion.div>
           )}

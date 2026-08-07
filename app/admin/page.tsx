@@ -31,7 +31,7 @@ export default function AdminPage() {
   const [confirmDel, setConfirmDel]       = useState<ConfirmDel>(null)
   const [showPriceList, setShowPriceList] = useState(false)
 
-  // Club Alenort Admin states
+  // Club FKUS Admin states
   const [clubOrders, setClubOrders]       = useState<any[]>([])
   const [clubUsers, setClubUsers]         = useState<any[]>([])
   const [loadingClub, setLoadingClub]     = useState(false)

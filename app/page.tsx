@@ -5,8 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import WhatsAppFAB from './components/WhatsAppFAB'
 import Header from './components/Header'
+import Footer from './components/Footer'
 import { useCart } from './context/CartContext'
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 type ProductRow = {
   id: number | string
@@ -64,6 +66,9 @@ const ProductCard = ({
   const images = product.image_urls && product.image_urls.length > 0 ? product.image_urls : []
   const [imgIndex, setImgIndex] = useState(0)
   const [justAdded, setJustAdded] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+  const [isWishlisted, setIsWishlisted] = useState(false)
+  const displayIndex = isHovering && images.length > 1 && imgIndex === 0 ? 1 : imgIndex
 
   const sizeList = product.sizes ? product.sizes.split(',').map(s => s.trim()).filter(Boolean) : []
   const colorList = product.colors ? product.colors.split(',').map(c => c.trim()).filter(Boolean) : []
@@ -83,13 +88,18 @@ const ProductCard = ({
   }
 
   return (
-    <div onClick={onOpenDetail} className="group/card relative flex flex-col cursor-pointer">
+    <div
+      onClick={onOpenDetail}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      className="group/card relative flex flex-col cursor-pointer"
+    >
 
       {/* Imagen del Producto - Portrait Aspect Ratio */}
-      <div className="relative w-full aspect-[3/4] overflow-hidden bg-zinc-925 flex items-center justify-center shrink-0 group/gallery">
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-surface-raised flex items-center justify-center shrink-0 group/gallery">
         {images.length > 0 ? (
           <img
-            src={images[imgIndex]}
+            src={images[displayIndex]}
             alt={product.name}
             loading="lazy"
             decoding="async"
@@ -120,7 +130,7 @@ const ProductCard = ({
               {images.map((_, idx) => (
                 <span
                   key={idx}
-                  className={`h-px transition-all duration-300 ${idx === imgIndex ? 'w-4 bg-white' : 'w-2.5 bg-white/40'}`}
+                  className={`h-px transition-all duration-300 ${idx === displayIndex ? 'w-4 bg-white' : 'w-2.5 bg-white/40'}`}
                 />
               ))}
             </div>
@@ -129,10 +139,24 @@ const ProductCard = ({
 
         {/* Etiqueta de descuento */}
         {discount > 0 && (
-          <div className="absolute top-3 left-3 border border-white/70 text-white text-[9px] font-medium px-2 py-[3px] tracking-[0.15em] uppercase z-10">
+          <div className="absolute top-3 left-3 bg-gold-500 text-black text-[9px] font-black px-2 py-[3px] tracking-[0.15em] uppercase z-10">
             −{discount}%
           </div>
         )}
+
+        {/* Wishlist */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setIsWishlisted(w => !w) }}
+          className={`absolute top-3 right-3 z-10 w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-200 cursor-pointer ${
+            isWishlisted ? 'bg-gold-500 opacity-100' : 'bg-black/40 opacity-100 sm:opacity-0 sm:group-hover/card:opacity-100 hover:bg-black/60'
+          }`}
+          title="Guardar en favoritos"
+        >
+          <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-black stroke-black' : 'fill-none stroke-white'}`} strokeWidth={1.8}>
+            <path d="M12 21s-7.5-4.6-10-9C.3 8.3 2 4 6 4c2.2 0 3.8 1.3 6 4 2.2-2.7 3.8-4 6-4 4 0 5.7 4.3 4 8-2.5 4.4-10 9-10 9z" />
+          </svg>
+        </button>
 
         {/* Botón agregar al carrito — overlay que aparece al pasar el mouse */}
         {hasPrice && (
@@ -140,8 +164,8 @@ const ProductCard = ({
             onClick={handleAdd}
             className={`absolute left-0 right-0 bottom-0 py-3 uppercase tracking-[0.2em] text-[10px] font-semibold text-center cursor-pointer transition-all duration-300 select-none z-10 ${
               justAdded
-                ? 'bg-white text-black translate-y-0'
-                : 'bg-black/85 text-white translate-y-full group-hover/card:translate-y-0 hover:bg-black'
+                ? 'bg-gold-500 text-black translate-y-0'
+                : 'bg-ink/90 text-bone translate-y-0 sm:translate-y-full sm:group-hover/card:translate-y-0 hover:bg-ink'
             }`}
           >
             {justAdded ? (
@@ -155,50 +179,50 @@ const ProductCard = ({
         )}
       </div>
 
-      <div className="p-4 flex flex-col flex-1 bg-zinc-950/90 backdrop-blur-md border-x border-b border-zinc-900">
+      <div className="p-4 flex flex-col flex-1 bg-surface/90 backdrop-blur-md border-x border-b border-hairline">
 
         {/* Marca */}
         {product.marca && (
-          <span className="text-[9px] font-medium text-zinc-400 tracking-[0.2em] uppercase mb-1">
+          <span className="text-[9px] font-medium text-smoke tracking-[0.2em] uppercase mb-1">
             {product.marca}
           </span>
         )}
 
         {/* Nombre del Producto */}
-        <h3 className="text-[11px] text-white tracking-wide leading-snug line-clamp-2 mb-2 min-h-[28px]" title={product.name}>
+        <h3 className="text-[11px] text-bone tracking-wide leading-snug line-clamp-2 mb-2 min-h-[28px]" title={product.name}>
           {product.name}
         </h3>
 
         {/* Precio */}
         <div className="flex items-baseline gap-2 mb-3">
           {product.price && (
-            <span className="text-[13px] font-medium text-white">
+            <span className="text-[13px] font-medium text-bone">
               {formatMoney(product.price)}
             </span>
           )}
           {product.compare_at_price && parseFloat(product.compare_at_price) > parseFloat(product.price || '0') && (
-            <span className="text-[11px] text-zinc-500 line-through font-light">
+            <span className="text-[11px] text-smoke line-through font-light">
               {formatMoney(product.compare_at_price)}
             </span>
           )}
         </div>
 
         {/* Selectores de Talle y Color */}
-        <div className="grid grid-cols-2 gap-3 mt-auto pt-3 border-t border-zinc-800">
+        <div className="grid grid-cols-2 gap-3 mt-auto pt-3 border-t border-hairline">
           <div className="relative">
             <select
               value={selectedColor}
               onChange={e => setSelectedColor(e.target.value)}
               onClick={e => e.stopPropagation()}
-              className="w-full bg-transparent border-b border-zinc-700 hover:border-zinc-400 text-[10px] font-medium tracking-wider uppercase pb-1.5 pr-4 text-zinc-300 focus:outline-none focus:border-white appearance-none cursor-pointer transition-colors"
+              className="w-full bg-transparent border-b border-hairline hover:border-gold-500 text-[10px] font-medium tracking-wider uppercase pb-1.5 pr-4 text-smoke focus:outline-none focus:border-gold-500 appearance-none cursor-pointer transition-colors"
             >
               {colorList.length > 0 ? (
-                colorList.map(c => <option key={c} value={c} className="bg-zinc-900">{c}</option>)
+                colorList.map(c => <option key={c} value={c} className="bg-surface">{c}</option>)
               ) : (
                 <option value="">Color único</option>
               )}
             </select>
-            <div className="absolute right-0 bottom-1.5 pointer-events-none text-zinc-500 text-[8px]">
+            <div className="absolute right-0 bottom-1.5 pointer-events-none text-smoke text-[8px]">
               ▾
             </div>
           </div>
@@ -208,15 +232,15 @@ const ProductCard = ({
               value={selectedSize}
               onChange={e => setSelectedSize(e.target.value)}
               onClick={e => e.stopPropagation()}
-              className="w-full bg-transparent border-b border-zinc-700 hover:border-zinc-400 text-[10px] font-medium tracking-wider uppercase pb-1.5 pr-4 text-zinc-300 focus:outline-none focus:border-white appearance-none cursor-pointer transition-colors"
+              className="w-full bg-transparent border-b border-hairline hover:border-gold-500 text-[10px] font-medium tracking-wider uppercase pb-1.5 pr-4 text-smoke focus:outline-none focus:border-gold-500 appearance-none cursor-pointer transition-colors"
             >
               {sizeList.length > 0 ? (
-                sizeList.map(s => <option key={s} value={s} className="bg-zinc-900">{s}</option>)
+                sizeList.map(s => <option key={s} value={s} className="bg-surface">{s}</option>)
               ) : (
                 <option value="">Talle único</option>
               )}
             </select>
-            <div className="absolute right-0 bottom-1.5 pointer-events-none text-zinc-500 text-[8px]">
+            <div className="absolute right-0 bottom-1.5 pointer-events-none text-smoke text-[8px]">
               ▾
             </div>
           </div>
@@ -238,7 +262,6 @@ function CatalogContent() {
   const [loading, setLoading]         = useState(true)
   const [error, setError]             = useState<string | null>(null)
   const [darkMode, setDarkMode]       = useState(true)
-  const [showContactMenu, setShowContactMenu] = useState(false)
   const [selectedGender, setSelectedGender] = useState<'Todos' | 'Hombre' | 'Mujer'>('Todos')
 
   useEffect(() => {
@@ -334,9 +357,8 @@ function CatalogContent() {
 
   const handleWhatsAppContact = () => {
     const cat = categoryId && categoryName ? ` de ${categoryName}` : ''
-    const msg = `Hola! Me interesa obtener información sobre productos${cat} por mayor.`
-    window.open(`https://wa.me/+5493854021865?text=${encodeURIComponent(msg)}`, '_blank')
-    setShowContactMenu(false)
+    const msg = `Hola! Tengo una consulta sobre productos${cat}.`
+    window.open(`https://wa.me/+5493813504756?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const dm = darkMode
@@ -433,11 +455,70 @@ function CatalogContent() {
     productsByCategory[catName].push(p)
   })
 
+  const isDefaultView = !searchTerm && !categoryId
+
   return (
     <div className={`min-h-screen ${bg}`}>
       <Header />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      {isDefaultView && (
+        <section className="relative w-full h-[62vh] sm:h-[82vh] overflow-hidden select-none">
+          {/* Mosaico editorial de fondo, tomado del catálogo real */}
+          <div className="absolute inset-0 grid grid-cols-3 gap-0.5 opacity-70">
+            {[0, 1, 2].map(i => {
+              const p = searchedProducts[i]
+              const img = p?.image_urls?.[0]
+              return (
+                <div key={i} className="relative h-full bg-surface-raised overflow-hidden">
+                  {img && (
+                    <img
+                      src={img}
+                      alt=""
+                      className="w-full h-full object-cover scale-105"
+                    />
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
+          <div className="absolute inset-0 bg-ink/20" />
+
+          <div className="relative h-full max-w-6xl mx-auto px-6 flex flex-col justify-end pb-14 sm:pb-20">
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="text-[11px] font-bold uppercase tracking-[0.35em] text-gold-400 mb-4"
+            >
+              Nueva Temporada
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: 'easeOut', delay: 0.05 }}
+              className="text-5xl sm:text-7xl font-black text-bone uppercase tracking-tight leading-[0.95] max-w-xl m-0"
+            >
+              Piezas exclusivas<br />
+            </motion.h1>
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: 'easeOut', delay: 0.15 }}
+              className="mt-7"
+            >
+              <button
+                onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-gold-500 hover:bg-gold-400 text-black font-black uppercase tracking-widest text-xs transition-colors duration-200 cursor-pointer"
+              >
+                Ver Colección
+              </button>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      <div id="catalogo" className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Breadcrumbs & Huge Title Section */}
         <div className="mb-12 select-none">
@@ -474,14 +555,20 @@ function CatalogContent() {
             )}
           </div>
 
-          {/* Huge Heading */}
-          <h1 className="text-5xl sm:text-7xl font-black text-white uppercase tracking-widest leading-none mb-6">
-            {searchTerm ? searchTerm : (
-              categoryName === 'Colección Completa' 
-                ? 'Colección Completa' 
-                : (categoryName.includes(' - ') ? categoryName.split(' - ')[1].trim() : categoryName)
-            )}
-          </h1>
+          {/* Heading: gigante solo en categoría/búsqueda; discreto en la vista home (el hero ya trae el H1 real) */}
+          {isDefaultView ? (
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-[0.3em] mb-6">
+              Colección Completa
+            </p>
+          ) : (
+            <h1 className="text-5xl sm:text-7xl font-black text-white uppercase tracking-widest leading-none mb-6">
+              {searchTerm ? searchTerm : (
+                categoryName === 'Colección Completa'
+                  ? 'Colección Completa'
+                  : (categoryName.includes(' - ') ? categoryName.split(' - ')[1].trim() : categoryName)
+              )}
+            </h1>
+          )}
 
           {/* Pestañas de Género */}
           <div className="flex items-center gap-2 mb-5">
@@ -491,8 +578,8 @@ function CatalogContent() {
                 onClick={() => setSelectedGender(g)}
                 className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest transition-all cursor-pointer border ${
                   selectedGender === g
-                    ? 'bg-white text-black border-white'
-                    : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-zinc-400 hover:text-white'
+                    ? 'bg-gold-500 text-black border-gold-500'
+                    : 'bg-transparent text-zinc-300 border-zinc-700 hover:border-gold-500 hover:text-white'
                 }`}
               >
                 {g}
@@ -506,7 +593,7 @@ function CatalogContent() {
               onClick={() => {
                 window.dispatchEvent(new Event('open-menu-drawer'))
               }}
-              className="text-xs font-black uppercase tracking-widest text-white border-b border-white pb-0.5 hover:text-zinc-300 hover:border-zinc-300 transition-all cursor-pointer bg-transparent border-t-0 border-x-0 outline-none rounded-none"
+              className="text-xs font-black uppercase tracking-widest text-white border-b border-gold-500 pb-0.5 hover:text-gold-400 hover:border-gold-400 transition-all cursor-pointer bg-transparent border-t-0 border-x-0 outline-none rounded-none"
             >
               Filtrar y ordenar
             </button>
@@ -527,12 +614,12 @@ function CatalogContent() {
               <div className="space-y-12">
                 {Object.entries(productsByCategory).map(([catName, list]) => (
                   <div key={catName} className="space-y-6">
-                    <div className="flex items-center gap-3 border-b border-zinc-850 pb-3">
-                      <span className="w-1.5 h-6 bg-white rounded-full" />
+                    <div className="flex items-center gap-3 border-b border-hairline pb-3">
+                      <span className="w-1.5 h-6 bg-gold-500 rounded-full" />
                       <h2 className={`text-lg font-black uppercase tracking-[0.15em] ${txt}`}>{catName}</h2>
                       <span className="text-xs text-zinc-300 font-bold">({list.length})</span>
                     </div>
-                    <div className="grid gap-x-6 gap-y-12 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid gap-x-8 gap-y-16 grid-cols-2 lg:grid-cols-3">
                       {list.map(p => <ProductCardWrapper key={p.id} product={p} />)}
                     </div>
                   </div>
@@ -540,7 +627,7 @@ function CatalogContent() {
               </div>
             ) : (
               // Filtered category view
-              <div className="grid gap-x-6 gap-y-12 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-x-8 gap-y-16 grid-cols-2 lg:grid-cols-3">
                 {searchedProducts.map(p => <ProductCardWrapper key={p.id} product={p} />)}
               </div>
             )}
@@ -557,7 +644,7 @@ function CatalogContent() {
             </p>
             <button
               onClick={handleWhatsAppContact}
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-white hover:bg-zinc-200 text-black font-black uppercase tracking-widest text-xs rounded-xl shadow-md transition-all duration-200 select-none cursor-pointer"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-gold-500 hover:bg-gold-400 text-black font-black uppercase tracking-widest text-xs transition-all duration-200 select-none cursor-pointer"
             >
               Contactar por WhatsApp
             </button>
@@ -565,11 +652,9 @@ function CatalogContent() {
         )}
       </div>
 
-      <WhatsAppFAB
-        showMenu={showContactMenu}
-        setShowMenu={setShowContactMenu}
-        onContact={handleWhatsAppContact}
-      />
+      <Footer />
+
+      <WhatsAppFAB onContact={handleWhatsAppContact} />
     </div>
   )
 }

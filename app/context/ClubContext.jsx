@@ -107,7 +107,7 @@ export function ClubProvider({ children }) {
         .maybeSingle()
       
       if (existingDni) {
-        throw new Error('El DNI ya se encuentra registrado en el Club Alenort')
+        throw new Error('El DNI ya se encuentra registrado en el Club FKUS')
       }
 
       // Generar código de membresía
