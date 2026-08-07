@@ -19,7 +19,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <span className="font-sans text-xl font-black tracking-[0.3em] text-bone select-none">FKUS</span>
             <p className="text-[11px] text-smoke leading-relaxed mt-4 max-w-[220px]">
-              Piezas de producción limitada. Diseño contemporáneo, materiales premium, exclusividad real.
+              Piezas de producción limitada, materiales premium, exclusividad real.
             </p>
           </div>
 
