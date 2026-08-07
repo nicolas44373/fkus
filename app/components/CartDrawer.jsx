@@ -245,7 +245,7 @@ export default function CartDrawer() {
       '🚚 Envíos Premium FKUS',
       clubCode ? '🎁 Este pedido sumará puntos Club FKUS al confirmarse.' : null,
       '',
-      'Por favor confirmen disponibilidad y costo final de los productos.',
+      'A Coordinar',
       '¡Muchas gracias! 🙌',
     ].filter(l => l !== null).join('\n')
 
@@ -823,7 +823,7 @@ export default function CartDrawer() {
                     <p className="flex items-center gap-1 text-gold-400 font-bold">
                       <Truck className="h-3.5 w-3.5" /> Envío de entrega
                     </p>
-                    <p className="text-gold-400 font-bold uppercase">Gratis</p>
+                    <p className="text-gold-400 font-bold uppercase">A Coordinar</p>
                   </div>
                   <div className="h-px bg-hairline my-2" />
                   <div className="flex items-center justify-between text-sm text-bone font-black">
